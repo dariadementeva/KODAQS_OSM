@@ -341,8 +341,13 @@ nrow(germany_poi_all_combined)
 
 ### Assign POI Data to German Municipalities
 
-Now that we have obtained and extracted public provision proxies across Germany from OSM, we need to assign each school, supermarket, or hospital to a municipality. This will ensure that, later on, we can link these proxies to survey responses using a matching key, namely,  a shared geographical unit across the data sources, such as the municipality, which is assigned to respondents based on their place of residence. 
-We ensure that the POI data matches coordinate reference system that of the German municipality polygons. The code then identifies which POI geometries are polygons or multipolygons and replaces those with their centroids (i.e., the most central pair of longitude and latitude) so that all features can be treated as points for spatial overlay with the German municipality polygons. To avoid geometry-related errors during spatial operations, spherical geometry processing is disabled. A spatial join is then performed to attach municipality ID and attributes to each POI based on checking whether each POI point lies within a municipality polygon (i.e., point-in-polygon overlay). Finally, the code checks how many POIs could not be matched to any municipality by counting missing municipality identifiers. 
+Now that we have obtained and extracted public provision proxies across Germany from OSM, we need to assign each school, supermarket, or hospital to a municipality. This will ensure that, later on, we can link these proxies to survey responses. To do so, we will use a matching key, namely, respondents' municipality as a shared geographical unit across the data sources, such as the municipality, which is assigned to respondents based on their place of residence. 
+
+We also ensure that the POI data matches coordinate reference system (CRS) that of the German municipality polygons. This step is essential because spatial overlays are only geometrically meaningful when all spatial objects are expressed in a common CRS. Mismatched CRS can otherwise lead to failed matches.
+
+The code then identifies which POI geometries are polygons or multipolygons and replaces those with their centroids (i.e., the most central pair of longitude and latitude) so that all features can be treated as points for spatial overlay with the German municipality polygons. Centroid reduction is chosen primarily for data simplification reasons: it allows all POI geometries (points and (multi)polygons) to be represented in a uniform point format.
+
+We then perform a spatial join to attach municipality identifiers and attributes to each POI by checking whether each POI point lies within a municipality polygon (point-in-polygon overlay). Finally, we assess match quality by counting the number of POIs that could not be assigned to any municipality, which may occur due to boundary effects.
 
 ```{r}
 
@@ -381,7 +386,7 @@ sum(is.na(poi_with_municipalities$mun_id))
 
 ```
 
-We identified that 205 were not matched with a municipality. To reveal the reason, we reverse-geocode the unmatched POI. This allows to further diagnose whether the unmatched POI lie outside Germany (e.g., OSM-related error) or artifacts stemming from the point-in-polygon/municipality matching procedure.
+We identified that 205 POI were not matched with a municipality. To reveal the reason, we reverse-geocode the unmatched POI. This allows to further diagnose whether the unmatched POI lie outside Germany (e.g., OSM-related error) or artifacts stemming from the point-in-polygon/municipality matching procedure.
 
 ```{r}
 poi_na <- poi_with_municipalities[is.na(poi_with_municipalities$mun_id), ]
@@ -404,13 +409,13 @@ poi_na_rg$country_code <- str_extract(str_trim(poi_na_rg$address), "[A-Z]{3}$")
 table(poi_na_rg$country_code)
 ```
 
-This output shows that many POI were not assigned to German municipalities because they are actually located in neighboring countries. Most fall in Czechia (51), Poland (33), Switzerland (47), Austria (32), and France (23), as well as in the Netherlands, Belgium, Luxembourg, and Denmark. This indicates that the municipality unmatches are largely due to POI lying outside Germany (OSM-based error) rather than errors in the spatial join. We can delete the unmatched POI, knowing there are irrelevant and do not belong to Germany administratively.
+The results show that many POI could not be assigned to German municipalities because they were actually located in neighboring countries. Most of these POI are in Czechia (51), Poland (33), Switzerland (47), Austria (32), and France (23) as well as in the Netherlands, Belgium, Luxembourg, and Denmark. This pattern suggests that the unmatched observations are primarily driven by POI lying outside Germany, reflecting OSM (positional) accuracy errors and administrative boundary effects, rather than by errors in the spatial join. We therefore drop the unmatched POI, as they fall outside German administrative boundaries and are not relevant for the analysis.
 
 ```{r}
 poi_with_municipalities_ger <- poi_with_municipalities[!is.na(poi_with_municipalities$mun_id), ]
 ```
 
-### Deduplicate POI Data 
+### CONTINUE POLISHING HERE, 11/02: Deduplicate POI Data 
 
 Since OSM data are not designed for academic purposes and do not constitute scientific data, they are not subject to rigorous data quality control prior to collection and do not adhere to strict data collection principles (e.g., codebooks or standardized assignment rules). We therefore recommend checking the data for duplicate entries. Such duplicates may occur, for example, when the same school is recorded both as a point and a polygon, or when it is erroneously documented multiple times as either a point or a polygon. These basic sanity checks help establish control over coverage errors arising from human data entry.
 
