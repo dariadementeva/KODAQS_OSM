@@ -1,0 +1,79 @@
+---
+title: "OSM_Geofabrik_Data_Access"
+output: html_document
+date: "2026-02-11"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Obtain OSM POI data: A Geofabrik-based Approach
+
+There are numerous ways to obtain OSM data. For example, one can use the OSM Overpass API to obtain custom subsets, the osmdata R package, shapefiles of OSM data extracts from Geofabrik, as well as other web infrastructures such as Protomaps, BBBike, Geoapify, and similar services. All of these data providers capture and render data directly from the global OSM infrastructure, but they differ in the amount of detail, as well as in their geographical and temporal coverage of rendered OSM content.
+
+For complete beginners, as well as for those who are more experienced but prefer working with alternative data formats rather than tabular data, we recommend starting with the shapefiles provided by Geofabrik. Compared to other OSM data providers, Geofabrik offers tidy and de-anonymized comprehensive files (e.g., geometry, place names, coordinates, built-environment feature classes, and other tags) with a selected set of basic yet comprehensive attributes. This data structure and level of content are well suited both for users who are just getting started with OSM and for the analytical purposes of this tool.
+
+How to obtain shapefiles from Geobfabrik? 
+
+**Step 1: Open the Geofabrik download site**/
+
+* Go to: https://download.geofabrik.de/ /
+
+**Step 2: Navigate to your area of interest**/
+
+* On the main page, select the Region (e.g., Europe, Asia, etc.)./
+
+* Select the Sub-Region (e.g., Germany, France, Luxembourg)./
+
+**Step 3: Download the shapefile package**/
+
+* On the sub-region page, locate the shapefile download link named: "XXX-latest-free.shp.zip", where XXX is the sub-region name./
+
+* Download the zip file and save it to your project’s data folder./
+
+**Step 4: Document the download date**/
+
+* Record the date you downloaded the data (DD/MM/YYYY) to ensure methodological transparency (e.g., in a README)./
+
+For Germany, we proceeded as follows: 
+
+**Step 1: Open Geofabrik and select Germany**/
+
+* Go to: https://download.geofabrik.de/
+
+* Select Region = Europe.
+
+* Select Sub-Region = Germany.
+
+**Step 2: Download shapefiles for all federal states**/ 
+
+::: {.callout-note title="FYI"}
+Germany is organized by its 16 federal states, so there is no single shapefile download for the whole country.
+:::
+
+* On the Germany page, find the list of federal states.
+
+* For each federal state, open its page and download the shapefile ZIP, for example, named hamburg-latest-free.shp.zip.
+
+* Repeat this until you have downloaded shapefiles for all 16 federal states.
+
+**Step 4: Download additional administrative-region shapefiles where applicable**/
+
+::: {.callout-note title="FYI"}
+Some federal states are further split into multiple shapefiles corresponding to administrative regions (Regierungsbezirke). 
+:::
+
+* Where these subdivisions exist, download all shapefile ZIPs listed for that state (e.g., for Bayern, Mittelfranken, Niederbayern, Oberbayern, Oberfranken, Oberpfalz, Schwaben, Unterfranken, etc.).
+
+**Step 5: Organize and name your files consistently**/
+
+* Create a dedicated folder for the raw downloads
+
+* Save all downloaded ZIP files there.
+
+* Use consistent naming 
+
+**Step 6: Record the download date**/
+
+* The shapefiles were obtained on 11/08/2025.
