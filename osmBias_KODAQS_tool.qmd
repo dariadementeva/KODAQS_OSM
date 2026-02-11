@@ -35,7 +35,6 @@ Link POI-based measures from OSM and official data to survey responses at the re
 **Step 4: Assess impacts on analytical results**\
 Estimate parallel regression models using OSM-based and official POI-based indicators. Compare model coefficients, statistical significance, and overall model fit to evaluate how data source differences may influence substantive conclusions.\
 
-
 ### Table of Content
 
 [Introduction](#introduction)
@@ -60,13 +59,14 @@ To address this question, we link survey responses on perceived infrastructural 
 
 This tool is designed as a step-by-step workflow that guides users through the preparation, comparison, and linkage of OSM and official POI data with survey data, and demonstrates how differences in POI data sources can affect empirical results and substantive conclusions in survey-based analyses. By centering on POI-based measures of public service provision, the tool offers a focused and transferable approach to assessing OSM data quality that can be adapted to other concepts and data quality metrics. While illustrated using German data, the workflow is applicable wherever at least one comparatively reliable reference dataset is available.
 
+
 # Data Prerequisites and Description
 
-To run this tool or to apply to their own applications, researchers should need the following data:
+To run this tool or to apply to their own applications, researchers should need the follwing data:
 
-* Georeferenced survey data that include a geographic reference (e.g., municipality, zip-code, grid cell ID) for each respondent's place of residence.
+* Georeferenced survey data that include a geographic reference (e.g., municipality) for each respondent's place of residence, which serves as the data linkage unit for linking POI data and public service provision proxies from both OSM and official POI sources.
 
-* A geodata file of geographic units with geometries (e.g., municipality, zip-code, grid cell ID) used as the linkage unit for locating POI data across data sources.
+* A geodata file of geographic units with geometries (e.g., municipalities) used as the linkage unit for locating POI data across data sources.
 
 * A selected OSM POI data subset.
 
@@ -117,6 +117,7 @@ library(tibble) # For creating and managing tibbles (special types of data frame
 library(purrr)
 library(stringr)
 library(tidygeocoder)
+library(nngeo)
 ```
 
 ```{r}
@@ -128,7 +129,15 @@ base <- "C:/Users/daria/Desktop/OSM_data_2025"
 
 ### Read in Synthetic Survey and Geospatial Data on German Municipalities
 
+```{r}
+# TO DO: SURVEY XXX
+```
+
+
 ```{r, warning=FALSE}
+
+# TO DO MUNICIPALITIES: DATA DESCRIPTION
+
 german_municipalities <- st_read(file.path(base, "municipalites_2021_epsg4326.shp"))
 
 # check coordinate reference system
@@ -283,8 +292,6 @@ save.image("OSM_raw_POI_data.RData")
 
 ### Extract Public Provision Proxies from OSM 
 
-POI-based measures from both data sources are aggregated to the municipal level and combined into a group of indicators representing the total number of hospitals, schools, and supermarkets within each municipality, which is then linked to survey respondents based on their municipality of residence. 
-
 The workflow below extracts public provision proxies from OSM by filtering, summarizing, and combining both point-based and polygon-based POI datasets. Administrative area-specific identifiers are derived from object names, allowing all area-specific datasets to be stacked into a single nation-wide dataset. The workflow also computes frequency counts of each proxy type by administrative area and geometry type (points and polygons), and finally merges point and polygon features using their shared attributes to produce a unified, nation-wide OSM-based dataset of public provision proxies across Germany.
 
 ```{r}
@@ -392,7 +399,6 @@ nrow(germany_poi_all_combined)
 ### Assign POI Data to German Municipalities
 
 Now that we have obtained and extracted public provision proxies across Germany from OSM, we need to assign each school, supermarket, or hospital to a municipality. This will ensure that, later on, we can link these proxies to survey responses using a matching key, namely,  a shared geographical unit across the data sources, such as the municipality, which is assigned to respondents based on their place of residence. 
-
 We ensure that the POI data matches coordinate reference system that of the German municipality polygons. The code then identifies which POI geometries are polygons or multipolygons and replaces those with their centroids (i.e., the most central pair of longitude and latitude) so that all features can be treated as points for spatial overlay with the German municipality polygons. To avoid geometry-related errors during spatial operations, spherical geometry processing is disabled. A spatial join is then performed to attach municipality ID and attributes to each POI based on checking whether each POI point lies within a municipality polygon (i.e., point-in-polygon overlay). Finally, the code checks how many POIs could not be matched to any municipality by counting missing municipality identifiers. 
 
 ```{r}
@@ -454,17 +460,238 @@ poi_na_rg$country_code <- str_extract(str_trim(poi_na_rg$address), "[A-Z]{3}$")
 
 table(poi_na_rg$country_code)
 ```
+
 This output shows that many POI were not assigned to German municipalities because they are actually located in neighboring countries. Most fall in Czechia (51), Poland (33), Switzerland (47), Austria (32), and France (23), as well as in the Netherlands, Belgium, Luxembourg, and Denmark. This indicates that the municipality unmatches are largely due to POI lying outside Germany (OSM-based error) rather than errors in the spatial join. We can delete the unmatched POI, knowing there are irrelevant and do not belong to Germany administratively.
 
 ```{r}
 poi_with_municipalities_ger <- poi_with_municipalities[!is.na(poi_with_municipalities$mun_id), ]
 ```
 
+### Deduplicate POI Data 
+
+Since OSM data are not designed for academic purposes and do not constitute scientific data, they are not subject to rigorous data quality control prior to collection and do not adhere to strict data collection principles (e.g., codebooks or standardized assignment rules). We therefore recommend checking the data for duplicate entries. Such duplicates may occur, for example, when the same school is recorded both as a point and a polygon, or when it is erroneously documented multiple times as either a point or a polygon. These basic sanity checks help establish control over coverage errors arising from human data entry.
+
+The deduplication procedure first re-projects all the POI from geographic coordinates in degrees to a projected coordinate reference system in meters (EPSG:25832), which allows exact distance calculations in meters. Using the re-projected data, a nearest-neighbor search is performed where each point is compared to itself and its closest-distance neighboring point, identifying neighbors that lie within a maximum distance of one meter. All candidate duplicate point pairs are constructed, excluding self-matches and keeping each pair only once. The second element of each duplicate pair is then marked as redundant, and these features are further removed from the original dataset. The result is a deduplicated POI dataset in which any point is a unique point.
+
+```{r}
+# reformat from degrees to meters 
+poi_m <- st_transform(poi_with_municipalities_ger, 25832)
+
+# find nearest neighbors within 1 meter 
+nn <- st_nn(poi_m, poi_m, k = 2, maxdist = 1, returnDist = TRUE)
+
+# create duplicate pairs 
+dup_pairs <- tibble(
+  i = rep(seq_along(nn$nn), lengths(nn$nn)),
+  j = unlist(nn$nn)
+) %>%
+  filter(i != j) %>%
+  mutate(a = pmin(i, j), b = pmax(i, j)) %>%
+  distinct(a, b)
+
+# identify duplicates 
+to_drop <- unique(dup_pairs$b)
+
+# deduplicate
+poi_with_municipalities_ger_dedup <- poi_with_municipalities_ger[-to_drop, ]
+
+# compare before and after
+
+# total POI before
+nrow(poi_with_municipalities_ger)
+
+# total POI after
+nrow(poi_with_municipalities_ger_dedup)
+
+# total schools, supermarkets, hospitals before
+table(poi_with_municipalities_ger$fclass)
+
+# total schools, supermarkets, hospitals after
+table(poi_with_municipalities_ger_dedup$fclass)
+
+```
+Before deduplication, the dataset contained 72704 points in total. After removing duplicates, the number of points was reduced to 72290. This reduction is also visible across POI categories. The number of hospitals decreased from 2403 to 2388 (-15), schools from 36279 to 36072 (-207), and supermarkets from 34022 to 33830 (-192). 
+
 # Part Two: Obtain official POI data: A POI-Bund-based Approach
 
-# Part Three: Compare Public Service Provision Coverage
+The tool is based on the the POI-Bund data. It is an official points-of-interest dataset provided by the Federal Agency for Cartography and Geodesy (BKG). It is based on geocoded POI address lists obtained from official sources or from independent research conducted by the BKG in 2022. Georeferencing of POI addresses was performed using the official BKG geocoding service. For schools, address lists for each federal state were obtained from state statistical authorities or other state agencies responsible for schools. For hospitals, address lists were obtained from the Institute for the Hospital Remuneration System (InEK) that maintains the official registry of all hospitals authorized to provide inpatient care within the national hospital financing system. For supermarkets, address lists were obtained from gb consite, a commercial organization specializing in web-based geomarketing and logistics geoservices. 
+
+::: {.callout-note title="FYI"}
+All public provision proxies, namely hospitals, schools, and supermarkets, were already georeferenced with a German municipality ID. Therefore, it was not necessary to perform a spatial overlay procedure. However, if other official built environment data are available but not georeferenced, the above procedure developed for georeferencing OSM data can be applied as well. Each public provision POI from the POI-Bund dataset is unique.
+:::
+
+```{r}
+base2 <- "C:/Users/daria/Desktop/POI_Bund"
+
+
+# define objects corresponding to each shapefile
+
+files2 <- c(
+  hospitals_de = "hospitals_cleaned.shp",
+  schools_de = "schools.shp",
+  supermarkets_de = "supermarkets_cleaned.shp"
+)
+
+
+# read shapefiles
+
+for (nm in names(files2)) {
+  assign(
+    nm,
+    st_read(dsn = file.path(base2, files2[[nm]]), quiet = TRUE)
+  )
+}
+
+save(
+  hospitals_de,
+  schools_de,
+  supermarkets_de,
+  file = "POI_Bund_data.RData"
+)
+
+# create a nation-wide official POI dataset
+
+poi_bund_stacked <- bind_rows(
+  hospitals_de %>%
+    mutate(poi_type = "hospital"),
+  
+  
+  schools_de %>%
+    mutate(poi_type = "school"),
+  
+  
+  supermarkets_de %>%
+    mutate(poi_type = "supermarket")
+)
+
+table(poi_bund_stacked$poi_type)
+```
+
+# Part Three: Compare Public Service Provision Coverage Across Data Sources
+
+In this part, we directly compare public service provision coverage across data sources. We bring together two sources of POI data,  POI-Bund data and German OSM data, by harmonizing their public service provision categories and stacking them into a single dataset. For each public provision service proxy, we then count the number of POIs in each data source. We visualize these counts using side-by-side bar charts, which allows to directly compare coverage across categories and identify where the two datasets converge or differ in their coverage of public  service provision proxies.
+
+```{r}
+# compare counts
+
+combined <- bind_rows(
+  poi_bund_stacked %>%
+    select(category = poi_type) %>%
+    mutate(dataset = "poi_bund_stacked"),
+  
+  
+  poi_with_municipalities_ger_dedup %>%
+    select(category = fclass) %>%
+    mutate(dataset = "poi_with_municipalities")
+)
+
+
+ggplot(combined, aes(x = category, fill = dataset)) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(
+    values = c(
+      "poi_bund_stacked" = "#014AAD",
+      "poi_with_municipalities" = "#CBDDFE"
+    ),
+    labels = c(
+      "poi_bund_stacked" = "Offical POI Data: POI-Bund",
+      "poi_with_municipalities" = "German OpenStreetMap Data"
+    )
+  ) +
+  scale_y_continuous(
+    limits = c(0, 40000),
+    labels = scales::label_comma(big.mark = ".", decimal.mark = ",")
+  ) +
+  labs(
+    x = "Public Servic Provision Proxies",
+    y = "POI Count",
+    fill = "Dataset"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+The figure shows a side-by-side comparison of POI counts for three public service provision proxies, hospitals, schools, and supermarkets, across two datasets: official POI-Bund data (dark blue) and German OSM data (light blue). Starting with hospitals, the official POI-Bund data shows slightly more hospitals than OSM, but the difference is small, suggesting broadly similar coverage for this service type.For schools, OSM reports a noticeably larger number of facilities than POI-Bund. A similar pattern appears for supermarkets. 
+
+These patterns may indicate that OSM tends to slightly overrepresent certain public service proxies, likely due to the nature of volunteer data collection and frequent updates. For instance, if a school consists of multiple campuses, POI-Bund may record it as a standalone institution, whereas OSM contributors might map each campus individually. Similarly, OSM may overcapture supermarkets, because volunteers can record street-level information directly on the ground, while POI-Bund relies primarily on web-based address listings, which may omit some localized entries.
+
+Overall, however, the two datasets relatively converge in their representation of public service provision, particularly in terms of the  distribution across service categories at a nation-wide level. This suggests that despite systematic differences in data collection and production practices, both data sources provide a broadly consistent picture of public service coverage in Germany. This may tentatively suggest that the two can be used interchangeably for measruing proxies of public service provision.
+
+Next, we compare the spatial distribution of public service provision across data sources by mapping POI counts at the municipality level. For each dataset, we aggregate points of interest by municipality and service type, then join these counts to municipal boundary geometries. We visualize the results using faceted choropleth maps, with each panel representing a different public service proxy and municipalities shaded by the POI counts. This spatial comparison helps to assess whether POI-Bund and OSM not only differ in overall counts, but also in how public service provision is spatially distributed across municipalities and whether the spatial distribution is relatively the same across the data sources.
+
+```{r}
+# compare maps
+
+counts_osm <- poi_with_municipalities_ger_dedup %>%
+  count(mun_id, fclass, name = "poi_count") %>%
+  arrange(mun_id, desc(poi_count))
+
+counts_bund <- poi_bund_stacked  %>%
+  count(mun_id, poi_type, name = "poi_count") %>%
+  arrange(mun_id, desc(poi_count))
+
+poi_bund_with_mun_geom <- counts_bund %>%
+  st_drop_geometry() %>%
+  left_join(
+    german_municipalities %>% select(mun_id, geometry),
+    by = "mun_id"
+  ) %>%
+  st_as_sf()
+
+poi_osm_with_mun_geom <- counts_osm %>%
+  st_drop_geometry() %>%
+  left_join(
+    german_municipalities %>% select(mun_id, geometry),
+    by = "mun_id"
+  ) %>%
+  st_as_sf()
+
+```
+
+```{r}
+ggplot(poi_bund_with_mun_geom) +
+  geom_sf(aes(fill = poi_count), color = NA) +
+  facet_wrap(~ poi_type) +
+  scale_fill_gradient(
+    low = "#deebf7",
+    high = "#08306b",
+    trans = "sqrt",
+    limits = c(0, 1500),
+    na.value = "grey95"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Public Provision Counts by Type and Municipality, Germany",
+    subtitle = "Official POI Data: POI-Bund",
+    fill = "POI count"
+  )
+```
+```{r}
+ggplot(poi_osm_with_mun_geom) +
+  geom_sf(aes(fill = poi_count), color = NA) +
+  facet_wrap(~ fclass) +
+  scale_fill_gradient(
+    low = "#deebf7",
+    high = "#08306b",
+    trans = "sqrt",
+    limits = c(0, 1500),
+    na.value = "grey95"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Public Provision Counts by Type and Municipality, Germany",
+    subtitle = "OSM POI Data",
+    fill = "POI count"
+  )
+```
+Across both figures, the spatial patterns of public service provision look very similar in POI-Bund and OSM. For all three service types, higher POI counts are consistently concentrated in densely populated and urbanized areas, especially around major metropolitan regions. This suggests that both datasets point to the same municipalities as key hubs of public service provision, indicating strong agreement in the relative spatial distribution of services across Germany. Importantly, there are no major regions where one dataset shows extensive coverage while the other shows none, and rural areas are represented in much the same way in both datasets. Overall, the maps show a high degree of convergence between POI-Bund and OSM in how public service provision proxies are distributed across space.
+
+Taken together, this convergence increases confidence in using OSM data as a reliable source for capturing public service provision proxies, even though there are clear differences in how data are collected, produced, and recorded in OSM compared to official built environment data.
+
 
 # Part Four: Link to Survey Data and Run Models
+
+ TO DO XXX
 
 # Conclusion and recommendations {#conclusion-and-recommendations}
 
