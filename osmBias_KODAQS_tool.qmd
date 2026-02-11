@@ -62,11 +62,11 @@ This tool is designed as a step-by-step workflow that guides users through the p
 
 # Data Prerequisites and Description
 
-To run this tool or to apply to their own applications, researchers should need the follwing data:
+To run this tool or to apply to their own applications, researchers should need the following data:
 
-* Georeferenced survey data that include a geographic reference (e.g., municipality) for each respondent's place of residence, which serves as the data linkage unit for linking POI data and public service provision proxies from both OSM and official POI sources.
+* Georeferenced survey data that include a geographic reference (e.g., municipality, zip-code, grid cell ID) for each respondent's place of residence.
 
-* A geodata file of geographic units with geometries (e.g., municipalities) used as the linkage unit for locating POI data across data sources.
+* A geodata file of geographic units with geometries (e.g., municipality, zip-code, grid cell ID) used as the linkage unit for locating POI data across data sources.
 
 * A selected OSM POI data subset.
 
