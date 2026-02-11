@@ -458,6 +458,7 @@ table(poi_with_municipalities_ger$fclass)
 table(poi_with_municipalities_ger_dedup$fclass)
 
 ```
+
 Before deduplication, the dataset contained 72704 points in total. After removing duplicates, the number of points was reduced to 72290. This reduction is also visible across POI categories. The number of hospitals decreased from 2403 to 2388 (-15), schools from 36279 to 36072 (-207), and supermarkets from 34022 to 33830 (-192). 
 
 # Part Two: Obtain official POI data: A POI-Bund-based Approach
@@ -515,7 +516,9 @@ poi_bund_stacked <- bind_rows(
 table(poi_bund_stacked$poi_type)
 ```
 
-# Part Three: Compare Public Service Provision Coverage Across Data Sources
+# Part Three: OSM Data Quality Checks 
+
+## Compare Public Service Provision Coverage and Completenss Across Data Sources
 
 In this part, we directly compare public service provision coverage across data sources. We bring together two sources of POI data,  POI-Bund data and German OSM data, by harmonizing their public service provision categories and stacking them into a single dataset. For each public provision service proxy, we then count the number of POIs in each data source. We visualize these counts using side-by-side bar charts, which allows to directly compare coverage across categories and identify where the two datasets converge or differ in their coverage of public  service provision proxies.
 
