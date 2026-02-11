@@ -17,7 +17,6 @@ biblio-style: apa
 
 # At a glance
 
-<!-- TEST CHANGE -->
 **How do differences in point of interest (POI) data sources affect analytical results?** \
 This tool offers a hands-on, step-by-step workflow to help users compare POI data from OpenStreetMap (OSM) with administrative POI and built environment datasets. The tutorial walks users through the following steps:\
 
@@ -163,11 +162,15 @@ How to obtain shapefiles from Geobfabrik? For the sake of brevity, we omit a det
 
 ### Read in OSM POI Data
 
-Once all the shapefiles are obtained, we can read them into R. First, the files are unzipped and their file paths are specified so they can be accessed within the R environment. Because POI in OSM may be represented using different geometries, both point and polygon layers are read to ensure complete coverage of POI features. Point features are defined by longitude and latitude coordinates representing a single location (e.g., a school or hospital), while polygon features represent area extents defined by multiple coordinates forming closed shapes (e.g., hospital complexes or supermarket buildings). Reading both layers ensures that all relevant OSM POI representations are captured.
+Once all the shapefiles are obtained, we can read them into R. First, the files are unzipped and their file paths are specified so they can be accessed within the R environment. Because POI in OSM may be represented using different geometries, both point and polygon layers are read to ensure complete coverage of POI features. Point features are defined by longitude and latitude coordinates representing a single location (e.g., a school or hospital), while polygon features represent area extents defined by multiple coordinates forming closed shapes (e.g., hospital complexes or supermarket buildings). Reading both layers ensures that all relevant OSM POI representations are captured. 
+
+A complication arises from the fact that there is no single shapefile download for Germany. Instead, the shapefiles are organized by the German 16 federal states and administrative areas. Below, we extract OSM data for each federal state or administrative area by reading in their respective shapefiles.
 
 ```{r, results="hide", message=FALSE}
 
 # define objects corresponding to each shapefile
+
+# NB: Germany is organized by its 16 federal states, so there is no single shapefile download for the whole country.
 
 files <- c(  
   arnsberg_regbez_poi = "arnsberg-regbez-latest-free.shp",
@@ -232,7 +235,7 @@ save.image("OSM_raw_POI_data.RData")
 
 ### Extract Public Provision Proxies from OSM 
 
-The workflow below extracts public provision proxies from OSM by filtering, summarizing, and combining both point-based and polygon-based POI datasets. Administrative area-specific identifiers are derived from object names, allowing all area-specific datasets to be stacked into a single nation-wide dataset. The workflow also computes frequency counts of each proxy type by administrative area and geometry type (points and polygons), and finally merges point and polygon features using their shared attributes to produce a unified, nation-wide OSM-based dataset of public provision proxies across Germany.
+The workflow below extracts public provision proxies from OSM by filtering, summarizing, and combining both point-based and polygon-based POI datasets. Administrative area-specific identifiers are derived from object names, allowing all area-specific datasets to be stacked into a single nationwide dataset. The workflow also computes frequency counts of each proxy type by administrative area and geometry type (points and polygons), and finally merges point and polygon features using their shared attributes to produce a unified, nationwide OSM-based dataset of public provision proxies across Germany.
 
 ```{r}
 # define OSM feature class that would match public provision proxies 
@@ -246,7 +249,7 @@ subset_poi <- function(x, keep = public_provision_poi) {
 }
 ```
 
-We create two helper functions to filter each administrative area–specific OSM dataset to retain only schools, supermarkets, and hospitals, derive an area identifier from the object name by removing the suffix, row-bind all regions into a single combined dataset, and produce summary counts by feature class and administrative-area.
+We create two helper functions to filter each administrative area-pecific OSM dataset to retain only schools, supermarkets, and hospitals, derive an area identifier from the object name by removing the suffix, row-bind all regions into a single combined dataset, and produce summary counts by feature class and administrative-area.
 
 ```{r}
 # helper function to stack all features into one sf table
@@ -267,7 +270,7 @@ fclass_freq <- function(poi_list, suffix_to_remove) {
 
 ```
 
-In this step, we first collect all administrative area-specific OSM point objects whose names end with _regbez_poi into a named list, using pattern matching and mget() to retrieve them from the environment. This list is then passed to helper functions that summarize the number of schools, supermarkets, and hospitals per administrative area and stack all regional datasets into a single nationwide point dataset while retaining region identifiers.
+In this step, we first collect all administrative area-specific OSM point objects whose names end with _regbez_poi into a named list, using pattern matching and the mget() function to retrieve them from the environment. This list is then passed to helper functions that summarize the number of schools, supermarkets, and hospitals per administrative area and stack all regional datasets into a single nationwide point dataset while retaining region identifiers.
 
 ```{r}
 # get point objects into a list 
