@@ -651,7 +651,11 @@ Taken together, this convergence increases confidence in using OSM data as a rel
  
 # Limitations {#limitation}
 
+CONTINUE, 13/02
+
 # Conclusion, recommendations, future work {#conclusion-and-recommendations}
+
+CONTINUE, 13/02
 
 # References
 
