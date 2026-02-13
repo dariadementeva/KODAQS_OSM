@@ -649,13 +649,42 @@ Taken together, this convergence increases confidence in using OSM data as a rel
 
  TO DO XXX
  
-# Limitations {#limitation}
 
-CONTINUE, 13/02
 
-# Conclusion, recommendations, future work {#conclusion-and-recommendations}
+# Conclusion, Recommendations and Future Work {#conclusion-recommendations-future-work}
 
-CONTINUE, 13/02
+The goal of this tool was to address a critical gap by providing an innovative, hands-on primer for assessing OSM data quality in survey-based analyses. The tool focused on evaluating the coverage of OSM POI data when used as an objective proxy for local public service provision in linked survey research and how differences in coverage may propagate into substantive conclusions.
+
+First, we demonstrated that OSM-based POI data and official built environment data offer largely comparable coverage of public service provision proxies at a nationwide and local levels. Second, the relatively small and negligible differences in coverage can be attributed to variations in data production processes and tagging logics. These differences reflect how OSM contributors and official data officers record, classify, and tag built environment features, as well as the specific rules applied when determining what can be defined as schools, hospitals, or supermarkets  both conceptually and geographically. Despite this conceptual non-equivalence across data sources, our results indicate that, for the purposes of our application, these POI datasets can be treated as interchangeable. Third, regression estimates derived from OSM and POI-Bund proxies yield highly similar results across all public service provision indicators and model specifications.
+
+Overall, these findings strengthen confidence that substantive conclusions regarding the relationship between perceived infrastructural deprivation and objective measures of public service provision are largely insensitive to the choice of POI data source. Any analytical error arising from differences in coverage or conceptual definitions across datasets appears to be minimal. Accordingly, our study demonstrates that OSM and official POI data sources can be considered highly interchangeable in survey data linkage-based research, particularly when they are used to operationalize aggregated measures of built environment availability.
+
+## Key Recommendations 
+
+We outline several key methodological recommendations for researchers interested in augmenting survey data with OpenStreetMap (OSM) and addressing similar research questions.
+
+* Carefully examine non-matches when linking OSM data to geographic units (e.g., municipalities, ZIP codes, grid cells).
+
+Researchers should explicitly diagnose the sources of non-matches, distinguishing between technical linkage issues (such as incompatible geographic boundaries or projection mismatches) and data-related issues in OSM itself (including volunteer tagging errors, administrative misclassification, or cross-border effects).
+
+* Deduplicate OSM data prior to analysis.
+
+To minimize redundancy, researchers should systematically cross-check point and polygon layers and remove duplicate features. Spatial neighbor detection algorithms can be used to identify likely duplicates, applying very small distance thresholds (e.g., within 1 meter) to flag redundant POI.
+
+* Become familiar with how POI are defined and classified in OSM.
+
+When benchmarking OSM against official POI data, or when using OSM as a standalone source, researchers should carefully review OSM tagging schemes and community conventions. This understanding is essential for evaluating what OSM-based POIs can capture and where their conceptual limits lie.
+
+* Where feasible, benchmark OSM against official POI data.
+
+Researchers should conduct low-effort, aggregated comparisons with administrative or official built environment datasets to verify that OSM provides sufficient coverage. When official data are unavailable, alternative benchmarks, such as address lists of chain supermarkets or other reliable facility registries, can serve as useful reference points.
+
+* Conduct robustness checks with respect to missing data imputation.
+
+Sensitivity analyses should be used to assess whether substantive results are robust to different assumptions about missing data and imputation strategies, ensuring that conclusions are not driven by data preprocessing decisions and are relatively free from processing errors.
+
+## Future Work 
+
 
 # References
 
