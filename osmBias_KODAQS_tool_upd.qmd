@@ -685,6 +685,25 @@ Sensitivity analyses should be used to assess whether substantive results are ro
 
 ## Future Work 
 
+* Expand the range of POI categories. 
+
+Future research should incorporate additional built environment features, such as post offices, public transport stops, pharmacies, banks and ATMs, to assess whether patterns of coverage as observed for hospitals, schools, and supermarkets generalize to other types of public and commercial infrastructure.
+
+* Extend to alternative operationalization schemes: Proximity measures?
+
+It is useful to explore distance-based indicators as well. It would be interesting to compare the quality and robustness of proximity measures, such as distance to the nearest hospital, school, or supermarket, derived from OSM versus official POI data, as these measures may be differently affected by both coverage and positional accuracy errors (i.e., spatial mismatches between recorded POI coordinates and their true real-world locations, for example when a hospital is mapped 200 m away from its actual location) when proxying individual-level access to services.
+
+* Assess external validity. 
+
+Extending the analysis beyond Germany to countries with varying levels of OSM maturity would allow for an evaluation of how cross-national variations in OSM data quality may shape OSM reliability for survey data linkage-based studies in other contexts.
+
+* Account for temporal alignment of official and OSM data sources. 
+
+Future studies should prioritize time-compatible comparisons between official POI datasets and OSM extracts, ideally matching reference years to model temporal discrepancies and their impact on coverage.
+
+* Account for OSM POI coverage dynamics. 
+
+It would be useful to disentangle true coverage gaps from changes driven by POI turnover, particularly for more volatile features, such as supermarkets, in order to insight into the temporal stability of OSM subsets.
 
 # References
 
