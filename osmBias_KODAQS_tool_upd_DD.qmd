@@ -52,7 +52,6 @@ To address this question, we link survey responses on perceived infrastructural 
 
 This tool is designed as a step-by-step workflow that guides users through the preparation, comparison, and linkage of OSM and official POI data with survey data, and demonstrates how differences in POI data sources can affect empirical results and substantive conclusions in survey-based analyses. By centering on POI-based measures of public service provision, the tool offers a focused and transferable approach to assessing OSM data quality that can be adapted to other concepts and data quality metrics. While illustrated using German data, the workflow is applicable wherever at least one comparatively reliable reference dataset is available.
 
-
 # Data Prerequisites and Description
 
 To run this tool or to apply to their own applications, researchers should need the following data:
@@ -74,6 +73,10 @@ In compliance with the above, the tool is based on:
 * Shapefiles of points-of-interest (POI) data from the German subset of OpenStreetMap, obtained from Geofabrik (2025)
 
 * Shapefiles of POI data from the Points of Interest Federal Dataset (POI-Bund) of the Federal Agency for Cartography and Geodesy (2022)
+
+::: {.callout-note title="FYI"}
+We suggest treating the tool as a pedagogical and didactical one. It is intended to help researchers become familiar with basic and lightweight OSM POI quality check procedures and to ascertain their fitness for use in a given research application.
+:::
 
 # Set-up
 
@@ -97,20 +100,19 @@ Several R packages support geospatial data processing. We rely primarily on sp, 
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 # Load required packages
 
-library(dplyr) # For data manipulation
-library(ggplot2) # For data visualization
-library(rlang)  # For code support and code infrastructure management
-library(sf) # For handling spatial (geometric) data, established package
-library(sp) # For handling spatial (geometric) data, more recent package
-library(tibble) # For creating and managing tibbles (special types of data frames)
-library(tidyr) # For data reshaping
-
-library(purrr)
-library(stringr)
-library(tidygeocoder)
-library(nngeo)
-library(lme4)
 library(broom.mixed)
+library(dplyr) # for data manipulation
+library(ggplot2) # for data visualization
+library(lme4) # for fitting linear and generalized linear mixed-effects models
+library(nngeo) # for spatial manipulation based on k-nearest neighbor algorithm
+library(purrr) # for functional programming helpers
+library(rlang)  # for code support and code infrastructure management
+library(sf) # for handling spatial (geometric) data, established package
+library(sp) # for handling spatial (geometric) data, more recent package
+library(stringr) # for handling string data
+library(tibble) # for creating and managing tibbles (special types of data frames)
+library(tidygeocoder) # for running geocoding tasks and handling geocoded data
+library(tidyr) # for data reshaping
 ```
 
 
