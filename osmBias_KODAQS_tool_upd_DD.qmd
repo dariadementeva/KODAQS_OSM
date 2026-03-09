@@ -436,7 +436,6 @@ POI-Bund data are not readily available and cannot be publicly shared here. The 
 ```{r, eval=FALSE}
 ## ---- Original code: Read POI-Bund shapefiles (not executed) ----
 
-
 files2 <- c(
   hospitals_de = "hospitals_cleaned.shp",
   schools_de = "schools.shp",
@@ -450,9 +449,10 @@ for (nm in names(files2)) {
 save(hospitals_de, schools_de, supermarkets_de, file = "POI_Bund_data.RData")
 ```
 
-```{r}
+```{r, eval=FALSE}
 
-## ---- Load pre-saved POI-Bund data ----
+## ---- Original code: Read POI-Bund data and pre-process (not executed) ---- 
+
 load("./data/POI_Bund_data.RData")
 
 # create a nation-wide official POI dataset
