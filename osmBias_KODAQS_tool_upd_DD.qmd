@@ -7,7 +7,7 @@ author:
   - name: "Anne-Kathrin Stroppe, research associate,  Survey Data Curation, GESIS – Leibniz Institute for the Social Sciences"
 image: img/icon_osmbias.png 
 image-alt: logo
-bibliography: references.bib
+bibliography: references.bib 
 format: html
 ---
 
