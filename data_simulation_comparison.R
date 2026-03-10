@@ -20,8 +20,7 @@ poi_names_zero <- paste0(poi_names_clean, "_zero")
 ## Extract original data ----
 
 # survey_context.RDS is created in original script with original geocoded data
-# (....Nextcloud\kodaqs_osm_poi\code\survey_context.R)
-#
+
 
 orig <- survey_context |>
   dplyr::select(
@@ -31,7 +30,13 @@ orig <- survey_context |>
   )
 
 
-sim <- simulated_survey_context
+sim_survey   <- readRDS("./data/sim_survey.rds")
+sim_osm      <- readRDS("./data/sim_osm_poi.rds") # or 'counts_osm_wide'
+sim_official <- readRDS("./data/sim_official_poi.rds") # or 'counts_bund_wide'
+
+sim <- sim_survey |>
+  dplyr::left_join(sim_osm,      by = "mun_id") |>
+  dplyr::left_join(sim_official, by = "mun_id")
 
 
 # --- 1. Sample size and cluster structure ----
