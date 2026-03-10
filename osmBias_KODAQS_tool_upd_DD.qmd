@@ -9,6 +9,8 @@ image: img/icon_osmbias.png
 image-alt: logo
 bibliography: references.bib
 format: html
+params:
+  real_data: false
 ---
 
 # At a glance
@@ -86,15 +88,12 @@ We suggest treating the tool as a pedagogical and didactical one. It is intended
 
 Several R packages support geospatial data processing. We rely primarily on `sp`, a well-established geospatial package, and `sf`, a newer framework for managing spatial data. Several highly well-known packages (e.g., `dplyr`, `ggplot2`, `rlang`, `tibble`, and alike) are used for data wrangling, visualization, statistical analysis, and general code support.
 
-```{r}
-# Install required packages  
-
-# install.packages(c(
-#   "dplyr", "ggplot2", "rlang", "sf", "sp", "tibble",
-#   "purrr", "stringr", "tidygeocoder", "nngeo",
-#   "lme4", "broom.mixed", "tidyr"
-# ))
-
+```{r, eval=FALSE}
+install.packages(c(
+  "broom.mixed", "dplyr", "ggplot2", "lme4", "nngeo",
+  "purrr", "rlang", "scales", "sf", "sp", "stringr",
+  "tibble", "tidygeocoder", "tidyr"
+))
 ```
 
 ```{r, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
@@ -113,6 +112,11 @@ library(stringr) # for handling string data
 library(tibble) # for creating and managing tibbles (special types of data frames)
 library(tidygeocoder) # for running geocoding tasks and handling geocoded data
 library(tidyr) # for data reshaping
+library(scales) # for axis label formatting
+```
+
+```{r, echo=FALSE}
+if (!dir.exists("./figures")) dir.create("./figures")
 ```
 
 ### Read in Geospatial Data on German Municipalities
@@ -130,6 +134,15 @@ st_crs(german_municipalities)
 # inspect attributes
 head(german_municipalities)  
 ```
+
+::: {.callout-note title="Rendering modes: `real_data` parameter"}
+This document supports two rendering modes controlled by the `real_data` parameter in the YAML header:
+
+- **`real_data: false` (default):** The document renders using pre-saved simulated datasets and pre-generated figures. No access to the original OSM or POI-Bund files is required.
+- **`real_data: true`:** The full spatial workflow runs on the real Geofabrik OSM shapefiles and POI-Bund data. All diagnostic outputs and figures are recomputed and saved to `./data/` and `./figures/` for future use in the default mode.
+
+**Prerequisite:** Before rendering with `real_data: false`, render at least once with `real_data: true` to generate the cached outputs (`./data/diag_*.rds` and `./figures/*.png`).
+:::
 
 # Tool application {#tool-application}
 
@@ -196,108 +209,155 @@ for (nm in names(files)) {
 save.image("OSM_raw_POI_data.RData")
 ```
 
-```{r, results="hide", message=FALSE}
-## ---- Load pre-saved OSM data ----
+::: {.callout-note title="Simulated data mode"}
+The code shown in Parts 1–3 reflects the full workflow as it would run with the original OSM and POI-Bund data (`real_data: true`). In this rendering (`real_data: false`), the code is displayed for illustration but executed silently using pre-saved outputs. All printed diagnostics, bar charts, and maps shown below are based on the real data and were saved during a prior run with `real_data: true`.
+:::
+
+```{r, eval=FALSE}
 load("./data/OSM_raw_POI_data.RData")
+```
+
+```{r, echo=FALSE, results="hide", message=FALSE}
+if (isTRUE(params$real_data)) {
+  load("./data/OSM_raw_POI_data.RData")
+} else {
+  poi_osm_sim <- readRDS("./data/sim_osm_poi.rds")
+}
 ```
 
 ### Extract Public Provision Proxies from OSM
 
 The workflow below extracts public provision proxies from OSM by filtering, summarizing, and combining both point-based and polygon-based POI datasets. Administrative area-specific identifiers are derived from object names, allowing all area-specific datasets to be stacked into a single nationwide dataset. The workflow also computes frequency counts of each proxy type by administrative area and geometry type (points and polygons), and finally merges point and polygon features using their shared attributes to produce a unified, nationwide OSM-based dataset of public provision proxies across Germany.
 
-```{r}
-# define OSM feature class that would match public provision proxies 
+We create two helper functions to filter each administrative area-specific OSM dataset to retain only schools, supermarkets, and hospitals, derive an area identifier from the object name by removing the suffix, row-bind all regions into a single combined dataset, and produce summary counts by public service provision proxies (i.e., OSM feature class, `fclass` below) and administrative-area.
+
+```{r, echo=FALSE}
+# Helper functions and constants — only needed for the real data path
 public_provision_poi <- c("school", "supermarket", "hospital")
 
-# create a helper function to subset the OSM files by the feature class of school, supermarket, hospital
 subset_poi <- function(x, keep = public_provision_poi) {
   dplyr::filter(x, fclass %in% keep)
 }
-```
 
-We create two helper functions to filter each administrative area-specific OSM dataset to retain only schools, supermarkets, and hospitals, derive an area identifier from the object name by removing the suffix, row-bind all regions into a single combined dataset, and produce summary counts by public service provision proxies (i.e., OSM feature class, `fclass` below) and administrative-area.
-
-```{r}
-# helper function to stack all features into one sf table
 subset_and_stack <- function(poi_list, suffix_to_remove) {
   imap_dfr(poi_list, ~ subset_poi(.x) %>%
              mutate(region = str_remove(.y, suffix_to_remove)))
 }
 
-
-# helper function to produce summary counts by feature class and administrative-area
 fclass_freq <- function(poi_list, suffix_to_remove) {
   imap_dfr(poi_list, ~ subset_poi(.x) %>%
              st_drop_geometry() %>%
              count(fclass, name = "n") %>%
              mutate(region = str_remove(.y, suffix_to_remove)))
 }
-
 ```
 
 In this step, we first collect all administrative area-specific OSM point objects whose names end with `\_regbez_poi` into a named list, using pattern matching and the `mget()` function to retrieve them from the environment. This list is then passed to helper functions that summarize the number of schools, supermarkets, and hospitals per administrative area and stack all regional datasets into a single nationwide point dataset while retaining region identifiers.
 
-```{r}
-# get point objects into a list 
-poi_list_points <- mget(ls(pattern = "_regbez_poi$")) |> as.list()
-
-# summarize counts
+```{r, eval=FALSE}
+poi_list_points   <- mget(ls(pattern = "_regbez_poi$")) |> as.list()
 poi_points_counts <- fclass_freq(poi_list_points, "_regbez_poi$")
 print(head(poi_points_counts))
-
-# stack and summarize counts
-poi_points_all <- subset_and_stack(poi_list_points, "_regbez_poi$")
-
-# per feature class, nationwide count
+poi_points_all    <- subset_and_stack(poi_list_points, "_regbez_poi$")
 table(poi_points_all$fclass)
+nrow(poi_points_all)
+```
 
-# overall, all points, nationwide count
-nrow(poi_points_all) 
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  poi_list_points   <- mget(ls(pattern = "_regbez_poi$")) |> as.list()
+  poi_points_counts <- fclass_freq(poi_list_points, "_regbez_poi$")
+  print(head(poi_points_counts))
+  poi_points_all    <- subset_and_stack(poi_list_points, "_regbez_poi$")
+  table(poi_points_all$fclass)
+  nrow(poi_points_all)
+  saveRDS(list(
+    counts_head  = head(poi_points_counts),
+    fclass_table = table(poi_points_all$fclass),
+    total        = nrow(poi_points_all)
+  ), "./data/diag_points.rds")
+} else {
+  d <- readRDS("./data/diag_points.rds")
+  print(d$counts_head)
+  print(d$fclass_table)
+  cat(d$total, "\n")
+}
 ```
 
 Second, the same logic is applied to polygon-based POIs.
 
-```{r}
-# get polygon objects into a list
-poi_list_polys <- mget(ls(pattern = "_regbez_poi_poly$")) |> as.list()
-
-# summarize counts
+```{r, eval=FALSE}
+poi_list_polys   <- mget(ls(pattern = "_regbez_poi_poly$")) |> as.list()
 poi_polys_counts <- fclass_freq(poi_list_polys, "_regbez_poi_poly$")
 print(head(poi_polys_counts))
-
-# stack polygons into one dataset
-poi_polys_all <- subset_and_stack(poi_list_polys, "_regbez_poi_poly$")
-
-# per feature class, nation-wide count
+poi_polys_all    <- subset_and_stack(poi_list_polys, "_regbez_poi_poly$")
 table(poi_polys_all$fclass)
-
-# overall, all polygons, nation-wide count
 nrow(poi_polys_all)
+```
+
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  poi_list_polys   <- mget(ls(pattern = "_regbez_poi_poly$")) |> as.list()
+  poi_polys_counts <- fclass_freq(poi_list_polys, "_regbez_poi_poly$")
+  print(head(poi_polys_counts))
+  poi_polys_all    <- subset_and_stack(poi_list_polys, "_regbez_poi_poly$")
+  table(poi_polys_all$fclass)
+  nrow(poi_polys_all)
+  saveRDS(list(
+    counts_head  = head(poi_polys_counts),
+    fclass_table = table(poi_polys_all$fclass),
+    total        = nrow(poi_polys_all)
+  ), "./data/diag_polys.rds")
+} else {
+  d <- readRDS("./data/diag_polys.rds")
+  print(d$counts_head)
+  print(d$fclass_table)
+  cat(d$total, "\n")
+}
 ```
 
 Next, a nationwide OSM-based dataset of public provision proxies across Germany is produced by combining the filtered and stacked point-based and polygon-based POI datasets, retaining only shared attributes to ensure consistency across geometry types.
 
-```{r}
+```{r, eval=FALSE}
 common_cols <- intersect(names(poi_polys_all), names(poi_points_all))
-
 germany_poi_all_combined <- bind_rows(
   poi_polys_all[, common_cols],
   poi_points_all[, common_cols]
 )
-
-# per feature class, nation-wide count
 table(germany_poi_all_combined$fclass)
-
-# per feature class and per region
 region_fclass_counts <- germany_poi_all_combined |>
-sf::st_drop_geometry() |>
-dplyr::count(region, fclass, name = "n") |>
-dplyr::arrange(region, fclass)
-
+  sf::st_drop_geometry() |>
+  dplyr::count(region, fclass, name = "n") |>
+  dplyr::arrange(region, fclass)
 print(head(region_fclass_counts))
+nrow(germany_poi_all_combined)
+```
 
-# overall, nation-wide count
-nrow(germany_poi_all_combined) 
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  common_cols <- intersect(names(poi_polys_all), names(poi_points_all))
+  germany_poi_all_combined <- bind_rows(
+    poi_polys_all[, common_cols],
+    poi_points_all[, common_cols]
+  )
+  table(germany_poi_all_combined$fclass)
+  region_fclass_counts <- germany_poi_all_combined |>
+    sf::st_drop_geometry() |>
+    dplyr::count(region, fclass, name = "n") |>
+    dplyr::arrange(region, fclass)
+  print(head(region_fclass_counts))
+  nrow(germany_poi_all_combined)
+  saveRDS(list(
+    fclass_table = table(germany_poi_all_combined$fclass),
+    region_head  = head(region_fclass_counts),
+    total        = nrow(germany_poi_all_combined)
+  ), "./data/diag_combined.rds")
+} else {
+  d <- readRDS("./data/diag_combined.rds")
+  print(d$fclass_table)
+  print(d$region_head)
+  cat(d$total, "\n")
+}
 ```
 
 ### Assign POI Data to German Municipalities
@@ -310,68 +370,90 @@ The code then identifies which POI geometries are polygons and replaces those wi
 
 We then perform a spatial join to attach municipality identifiers and attributes to each POI by checking whether each POI point lies within a municipality polygon (point-in-polygon overlay). Finally, we assess match quality by counting the number of POIs that could not be assigned to any municipality, which may occur due to boundary effects.
 
-```{r, message=FALSE, warning=FALSE}
-# force sf object
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
 germany_poi_all_combined <- st_as_sf(germany_poi_all_combined)
-
-# ensure CRS is compatible across data sources
 st_crs(germany_poi_all_combined) <- st_crs(german_municipalities)
-
-# identify polygon geometries
-geom_type <- st_geometry_type(germany_poi_all_combined)
-
+geom_type  <- st_geometry_type(germany_poi_all_combined)
 is_polygon <- geom_type %in% c("POLYGON", "MULTIPOLYGON")
-
-# centroid reduction
-# replace polygons with their centroids, keep points as are
-
 germany_poi_all_combined$geometry[is_polygon] <-
   st_centroid(germany_poi_all_combined$geometry[is_polygon])
-
-sf_use_s2(FALSE) # suppress errors coming from st_within, force municipality assignment
-
-# overlay OSM public provision proxies with municipalities
-
+sf_use_s2(FALSE)
 poi_with_municipalities <- st_join(
   germany_poi_all_combined,
   german_municipalities,
   join = st_within,
   left = TRUE
 )
-
-# check non-matches
-
 sum(is.na(poi_with_municipalities$mun_id))
-
 ```
 
-We identified that 205 POI were not matched with a municipality. To  track non-matches, we reverse-geocode the unmatched POI. This allows to further diagnose whether the unmatched POI lie outside Germany (e.g., OSM-related error) or are artifacts of the point-in-polygon/municipality matching procedure.
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+if (isTRUE(params$real_data)) {
+  germany_poi_all_combined <- st_as_sf(germany_poi_all_combined)
+  st_crs(germany_poi_all_combined) <- st_crs(german_municipalities)
+  geom_type  <- st_geometry_type(germany_poi_all_combined)
+  is_polygon <- geom_type %in% c("POLYGON", "MULTIPOLYGON")
+  germany_poi_all_combined$geometry[is_polygon] <-
+    st_centroid(germany_poi_all_combined$geometry[is_polygon])
+  sf_use_s2(FALSE)
+  poi_with_municipalities <- st_join(
+    germany_poi_all_combined,
+    german_municipalities,
+    join = st_within,
+    left = TRUE
+  )
+  n_na <- sum(is.na(poi_with_municipalities$mun_id))
+  cat(n_na, "\n")
+  saveRDS(list(n_na = n_na), "./data/diag_join.rds")
+} else {
+  d <- readRDS("./data/diag_join.rds")
+  cat(d$n_na, "\n")
+}
+```
 
-```{r, message = FALSE, warning = FALSE}
-poi_na <- poi_with_municipalities[is.na(poi_with_municipalities$mun_id), ]
+We identified that `r readRDS("./data/diag_join.rds")$n_na` POI were not matched with a municipality. To track non-matches, we reverse-geocode the unmatched POI. This allows to further diagnose whether the unmatched POI lie outside Germany (e.g., OSM-related error) or are artifacts of the point-in-polygon/municipality matching procedure.
 
-coords <- st_coordinates(poi_na)
-
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+poi_na     <- poi_with_municipalities[is.na(poi_with_municipalities$mun_id), ]
+coords     <- st_coordinates(poi_na)
 poi_na$lon <- coords[, "X"]
 poi_na$lat <- coords[, "Y"]
-
-poi_na_rg <- poi_na %>%
-  reverse_geocode(
-    lat = lat,
-    long = lon,
-    method = "arcgis",
-    address = address, 
-    min_time = 1)
-
+poi_na_rg  <- poi_na %>%
+  reverse_geocode(lat = lat, long = lon, method = "arcgis",
+                  address = address, min_time = 1)
 poi_na_rg$country_code <- str_extract(str_trim(poi_na_rg$address), "[A-Z]{3}$")
-
 table(poi_na_rg$country_code)
 ```
 
-The results show that unmatched POI could not be assigned to German municipalities because they were administratively located in neighboring countries. Most of these POI are in Czechia (51), Poland (33), Switzerland (47), Austria (32), and France (23), as well as in the Netherlands, Belgium, Luxembourg, and Denmark. This pattern suggests that the unmatched observations are primarily driven by POI lying outside Germany, reflecting OSM (positional) accuracy errors and administrative boundary effects, rather than errors from the spatial join. We therefore drop the unmatched POI, as they fall outside German administrative boundaries and are not relevant for the analysis.
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+if (isTRUE(params$real_data)) {
+  poi_na     <- poi_with_municipalities[is.na(poi_with_municipalities$mun_id), ]
+  coords     <- st_coordinates(poi_na)
+  poi_na$lon <- coords[, "X"]
+  poi_na$lat <- coords[, "Y"]
+  poi_na_rg  <- poi_na %>%
+    reverse_geocode(lat = lat, long = lon, method = "arcgis",
+                    address = address, min_time = 1)
+  poi_na_rg$country_code <- str_extract(str_trim(poi_na_rg$address), "[A-Z]{3}$")
+  country_table <- table(poi_na_rg$country_code)
+  print(country_table)
+  saveRDS(list(country_table = country_table), "./data/diag_geocode.rds")
+} else {
+  d <- readRDS("./data/diag_geocode.rds")
+  print(d$country_table)
+}
+```
 
-```{r}
+The results show that unmatched POI could not be assigned to German municipalities because they were administratively located in neighboring countries. Most of these POI are in Czechia (`r readRDS("./data/diag_geocode.rds")$country_table[["CZE"]]`), Poland (`r readRDS("./data/diag_geocode.rds")$country_table[["POL"]]`), Switzerland (`r readRDS("./data/diag_geocode.rds")$country_table[["CHE"]]`), Austria (`r readRDS("./data/diag_geocode.rds")$country_table[["AUT"]]`), and France (`r readRDS("./data/diag_geocode.rds")$country_table[["FRA"]]`), as well as in the Netherlands, Belgium, Luxembourg, and Denmark. This pattern suggests that the unmatched observations are primarily driven by POI lying outside Germany, reflecting OSM (positional) accuracy errors and administrative boundary effects, rather than errors from the spatial join. We therefore drop the unmatched POI, as they fall outside German administrative boundaries and are not relevant for the analysis.
+
+```{r, eval=FALSE}
 poi_with_municipalities_ger <- poi_with_municipalities[!is.na(poi_with_municipalities$mun_id), ]
+```
+
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  poi_with_municipalities_ger <- poi_with_municipalities[!is.na(poi_with_municipalities$mun_id), ]
+}
 ```
 
 ### Deduplicate POI Data
@@ -380,14 +462,9 @@ Because OSM data are not created for academic research and do not qualify as sci
 
 The deduplication procedure begins by re-projecting all POI from geographic coordinates (degrees) to a projected CRS measured in meters (i.e., EPSG:25832). This re-projection enables accurate distance calculations. Using the projected data, a nearest-neighbor search is conducted in which each point is compared to itself and its closest neighboring point. Neighboring points located within a maximum distance of one meter are flagged as potential duplicates. From these results, all candidate duplicate point pairs are constructed, excluding self-matches and retaining each pair only once. The second point in each identified duplicate pair is then classified as redundant and removed from the original dataset. This process yields a deduplicated POI dataset in which each remaining point represents a unique public service provision proxy.
 
-```{r}
-# reformat from degrees to meters 
-poi_m <- st_transform(poi_with_municipalities_ger, 25832)
-
-# find nearest neighbors within 1 meter 
-nn <- st_nn(poi_m, poi_m, k = 2, maxdist = 1, returnDist = TRUE)
-
-# create duplicate pairs 
+```{r, eval=FALSE}
+poi_m     <- st_transform(poi_with_municipalities_ger, 25832)
+nn        <- st_nn(poi_m, poi_m, k = 2, maxdist = 1, returnDist = TRUE)
 dup_pairs <- tibble(
   i = rep(seq_along(nn$nn), lengths(nn$nn)),
   j = unlist(nn$nn)
@@ -395,30 +472,47 @@ dup_pairs <- tibble(
   filter(i != j) %>%
   mutate(a = pmin(i, j), b = pmax(i, j)) %>%
   distinct(a, b)
-
-# identify duplicates 
-to_drop <- unique(dup_pairs$b)
-
-# deduplicate
+to_drop   <- unique(dup_pairs$b)
 poi_with_municipalities_ger_dedup <- poi_with_municipalities_ger[-to_drop, ]
-
-# compare before and after
-
-# total POI before
 nrow(poi_with_municipalities_ger)
-
-# total POI after
 nrow(poi_with_municipalities_ger_dedup)
-
-# total schools, supermarkets, hospitals before
 table(poi_with_municipalities_ger$fclass)
-
-# total schools, supermarkets, hospitals after
 table(poi_with_municipalities_ger_dedup$fclass)
-
 ```
 
-Before deduplication, the dataset contained 72704 points in total. After removing duplicates, the number of points was reduced to 72290. This reduction is also visible across POI categories. The number of hospitals decreased from 2403 to 2388 (-15), schools from 36279 to 36072 (-207), and supermarkets from 34022 to 33830 (-192).
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  poi_m     <- st_transform(poi_with_municipalities_ger, 25832)
+  nn        <- st_nn(poi_m, poi_m, k = 2, maxdist = 1, returnDist = TRUE)
+  dup_pairs <- tibble(
+    i = rep(seq_along(nn$nn), lengths(nn$nn)),
+    j = unlist(nn$nn)
+  ) %>%
+    filter(i != j) %>%
+    mutate(a = pmin(i, j), b = pmax(i, j)) %>%
+    distinct(a, b)
+  to_drop   <- unique(dup_pairs$b)
+  poi_with_municipalities_ger_dedup <- poi_with_municipalities_ger[-to_drop, ]
+  nrow(poi_with_municipalities_ger)
+  nrow(poi_with_municipalities_ger_dedup)
+  table(poi_with_municipalities_ger$fclass)
+  table(poi_with_municipalities_ger_dedup$fclass)
+  saveRDS(list(
+    n_before      = nrow(poi_with_municipalities_ger),
+    n_after       = nrow(poi_with_municipalities_ger_dedup),
+    fclass_before = table(poi_with_municipalities_ger$fclass),
+    fclass_after  = table(poi_with_municipalities_ger_dedup$fclass)
+  ), "./data/diag_dedup.rds")
+} else {
+  d <- readRDS("./data/diag_dedup.rds")
+  cat(d$n_before, "\n")
+  cat(d$n_after, "\n")
+  print(d$fclass_before)
+  print(d$fclass_after)
+}
+```
+
+Before deduplication, the dataset contained `r readRDS("./data/diag_dedup.rds")$n_before` points in total. After removing duplicates, the number of points was reduced to `r readRDS("./data/diag_dedup.rds")$n_after`. This reduction is also visible across POI categories. The number of hospitals decreased from `r readRDS("./data/diag_dedup.rds")$fclass_before[["hospital"]]` to `r readRDS("./data/diag_dedup.rds")$fclass_after[["hospital"]]`, schools from `r readRDS("./data/diag_dedup.rds")$fclass_before[["school"]]` to `r readRDS("./data/diag_dedup.rds")$fclass_after[["school"]]`, and supermarkets from `r readRDS("./data/diag_dedup.rds")$fclass_before[["supermarket"]]` to `r readRDS("./data/diag_dedup.rds")$fclass_after[["supermarket"]]`.
 
 # Part Two: Obtain official POI data: A POI-Bund-based Approach
 
@@ -444,19 +538,32 @@ for (nm in names(files2)) {
 save(hospitals_de, schools_de, supermarkets_de, file = "POI_Bund_data.RData")
 ```
 
-```{r}
-## ---- Original code: Read POI-Bund data and pre-process (not executed) ----
-
+```{r, eval=FALSE}
 load("./data/POI_Bund_data.RData")
-
-# create a nation-wide official POI dataset
 poi_bund_stacked <- bind_rows(
-  hospitals_de %>% mutate(poi_type = "hospital"),
-  schools_de %>% mutate(poi_type = "school"),
+  hospitals_de    %>% mutate(poi_type = "hospital"),
+  schools_de      %>% mutate(poi_type = "school"),
   supermarkets_de %>% mutate(poi_type = "supermarket")
 )
-
 table(poi_bund_stacked$poi_type)
+```
+
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  load("./data/POI_Bund_data.RData")
+  poi_bund_stacked <- bind_rows(
+    hospitals_de    %>% mutate(poi_type = "hospital"),
+    schools_de      %>% mutate(poi_type = "school"),
+    supermarkets_de %>% mutate(poi_type = "supermarket")
+  )
+  poi_type_table <- table(poi_bund_stacked$poi_type)
+  print(poi_type_table)
+  saveRDS(list(poi_type_table = poi_type_table), "./data/diag_poi_bund.rds")
+} else {
+  poi_official_sim <- readRDS("./data/sim_official_poi.rds")
+  d <- readRDS("./data/diag_poi_bund.rds")
+  print(d$poi_type_table)
+}
 ```
 
 # Part Three: OSM Data Quality Checks
@@ -469,8 +576,7 @@ Following the conceptualization proposed by @dementeva2025, coverage in OSM can 
 
 In this part of the tool, OSM-based POI measures are benchmarked against official built environment data from BKG, which are treated as a gold standard. By comparing counts and distributions of public service facilities across the two datasets and German municipalities, the tool enables researchers to quantify and visualize under- and overcoverage in OSM and to critically assess the suitability of OSM data for linking with survey responses. In particular, below, for each public provision service proxy, we count the number of POI in each data source. We visualize these counts using side-by-side bar charts, which allows to directly compare coverage across categories and identify where the two datasets converge or differ in their coverage of public service provision proxies.
 
-```{r}
-# compare counts
+```{r, eval=FALSE}
 combined <- bind_rows(
   poi_bund_stacked %>%
     select(category = poi_type) %>%
@@ -479,16 +585,15 @@ combined <- bind_rows(
     select(category = fclass) %>%
     mutate(dataset = "poi_with_municipalities")
 )
-
 ggplot(combined, aes(x = category, fill = dataset)) +
   geom_bar(position = "dodge") +
   scale_fill_manual(
     values = c(
-      "poi_bund_stacked" = "#014AAD",
+      "poi_bund_stacked"        = "#014AAD",
       "poi_with_municipalities" = "#CBDDFE"
     ),
     labels = c(
-      "poi_bund_stacked" = "Official POI Data: POI-Bund",
+      "poi_bund_stacked"        = "Official POI Data: POI-Bund",
       "poi_with_municipalities" = "German OpenStreetMap Data"
     )
   ) +
@@ -496,14 +601,45 @@ ggplot(combined, aes(x = category, fill = dataset)) +
     limits = c(0, 40000),
     labels = scales::label_comma(big.mark = ".", decimal.mark = ",")
   ) +
-  labs(
-    x = "Public Service Provision Proxies",
-    y = "POI Count",
-    fill = "Dataset"
-  ) +
+  labs(x = "Public Service Provision Proxies", y = "POI Count", fill = "Dataset") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  combined <- bind_rows(
+    poi_bund_stacked %>%
+      select(category = poi_type) %>%
+      mutate(dataset = "poi_bund_stacked"),
+    poi_with_municipalities_ger_dedup %>%
+      select(category = fclass) %>%
+      mutate(dataset = "poi_with_municipalities")
+  )
+  p_bar <- ggplot(combined, aes(x = category, fill = dataset)) +
+    geom_bar(position = "dodge") +
+    scale_fill_manual(
+      values = c(
+        "poi_bund_stacked"        = "#014AAD",
+        "poi_with_municipalities" = "#CBDDFE"
+      ),
+      labels = c(
+        "poi_bund_stacked"        = "Official POI Data: POI-Bund",
+        "poi_with_municipalities" = "German OpenStreetMap Data"
+      )
+    ) +
+    scale_y_continuous(
+      limits = c(0, 40000),
+      labels = scales::label_comma(big.mark = ".", decimal.mark = ",")
+    ) +
+    labs(x = "Public Service Provision Proxies", y = "POI Count", fill = "Dataset") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  print(p_bar)
+  ggsave("./figures/barplot_poi_comparison.png", p_bar, width = 7, height = 5, dpi = 300)
+} else {
+  knitr::include_graphics("./figures/barplot_poi_comparison.png")
+}
 ```
 
 The figure shows a comparison of POI counts for three public service provision proxies across two datasets (official POI-Bund data in dark blue and German OSM data in light blue). Starting with hospitals, the official POI-Bund data shows slightly more hospitals than OSM, but the difference is small, suggesting broadly similar coverage for this service type. For schools, OSM reports a noticeably larger number of facilities than POI-Bund. A similar pattern appears for supermarkets. It is important to note that these (rather small) discrepancies are not due to duplicated features, as the duplication was addressed early on (see "Deduplicate POI data").
@@ -514,70 +650,96 @@ Overall, however, the two datasets largely converge in their representation of p
 
 Next, we compare the spatial distribution of public service provision across data sources by mapping POI counts at the municipality level. For each dataset, we aggregate points of interest by municipality and service type, then join these counts to municipal boundary geometries. We visualize the results using faceted choropleth maps, with each panel representing a different public service proxy and municipalities shaded by the POI counts. The figures are instrumental in assess whether POI-Bund and OSM not only differ in overall counts, but also in how public service provision is spatially distributed across municipalities and whether the spatial distribution is relatively the same across the data sources.
 
-```{r, message = FALSE, warning = FALSE}
-# compare maps
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
 counts_osm <- poi_with_municipalities_ger_dedup %>%
   count(mun_id, fclass, name = "poi_count") %>%
   arrange(mun_id, desc(poi_count))
-
-counts_bund <- poi_bund_stacked  %>%
+counts_bund <- poi_bund_stacked %>%
   count(mun_id, poi_type, name = "poi_count") %>%
   arrange(mun_id, desc(poi_count))
-
 poi_bund_with_mun_geom <- counts_bund %>%
   st_drop_geometry() %>%
-  left_join(
-    german_municipalities %>% select(mun_id, geometry),
-    by = "mun_id"
-  ) %>%
+  left_join(german_municipalities %>% select(mun_id, geometry), by = "mun_id") %>%
   st_as_sf()
-
 poi_osm_with_mun_geom <- counts_osm %>%
   st_drop_geometry() %>%
-  left_join(
-    german_municipalities %>% select(mun_id, geometry),
-    by = "mun_id"
-  ) %>%
+  left_join(german_municipalities %>% select(mun_id, geometry), by = "mun_id") %>%
   st_as_sf()
-
 ```
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+if (isTRUE(params$real_data)) {
+  counts_osm <- poi_with_municipalities_ger_dedup %>%
+    count(mun_id, fclass, name = "poi_count") %>%
+    arrange(mun_id, desc(poi_count))
+  counts_bund <- poi_bund_stacked %>%
+    count(mun_id, poi_type, name = "poi_count") %>%
+    arrange(mun_id, desc(poi_count))
+  poi_bund_with_mun_geom <- counts_bund %>%
+    st_drop_geometry() %>%
+    left_join(german_municipalities %>% select(mun_id, geometry), by = "mun_id") %>%
+    st_as_sf()
+  poi_osm_with_mun_geom <- counts_osm %>%
+    st_drop_geometry() %>%
+    left_join(german_municipalities %>% select(mun_id, geometry), by = "mun_id") %>%
+    st_as_sf()
+}
+```
+
+```{r, eval=FALSE}
 ggplot(poi_bund_with_mun_geom) +
   geom_sf(aes(fill = poi_count), color = NA) +
   facet_wrap(~ poi_type) +
-  scale_fill_gradient(
-    low = "#deebf7",
-    high = "#08306b",
-    trans = "sqrt",
-    limits = c(0, 1500),
-    na.value = "grey95"
-  ) +
+  scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
+                      limits = c(0, 1500), na.value = "grey95") +
   theme_minimal() +
-  labs(
-    title = "Public Provision Counts by Type and Municipality, Germany",
-    subtitle = "Official POI Data: POI-Bund",
-    fill = "POI count"
-  )
+  labs(title = "Public Provision Counts by Type and Municipality, Germany",
+       subtitle = "Official POI Data: POI-Bund", fill = "POI count")
 ```
 
-```{r}
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  p_map_bund <- ggplot(poi_bund_with_mun_geom) +
+    geom_sf(aes(fill = poi_count), color = NA) +
+    facet_wrap(~ poi_type) +
+    scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
+                        limits = c(0, 1500), na.value = "grey95") +
+    theme_minimal() +
+    labs(title = "Public Provision Counts by Type and Municipality, Germany",
+         subtitle = "Official POI Data: POI-Bund", fill = "POI count")
+  print(p_map_bund)
+  ggsave("./figures/map_poi_bund.png", p_map_bund, width = 10, height = 5, dpi = 300)
+} else {
+  knitr::include_graphics("./figures/map_poi_bund.png")
+}
+```
+
+```{r, eval=FALSE}
 ggplot(poi_osm_with_mun_geom) +
   geom_sf(aes(fill = poi_count), color = NA) +
   facet_wrap(~ fclass) +
-  scale_fill_gradient(
-    low = "#deebf7",
-    high = "#08306b",
-    trans = "sqrt",
-    limits = c(0, 1500),
-    na.value = "grey95"
-  ) +
+  scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
+                      limits = c(0, 1500), na.value = "grey95") +
   theme_minimal() +
-  labs(
-    title = "Public Provision Counts by Type and Municipality, Germany",
-    subtitle = "OSM POI Data",
-    fill = "POI count"
-  )
+  labs(title = "Public Provision Counts by Type and Municipality, Germany",
+       subtitle = "OSM POI Data", fill = "POI count")
+```
+
+```{r, echo=FALSE}
+if (isTRUE(params$real_data)) {
+  p_map_osm <- ggplot(poi_osm_with_mun_geom) +
+    geom_sf(aes(fill = poi_count), color = NA) +
+    facet_wrap(~ fclass) +
+    scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
+                        limits = c(0, 1500), na.value = "grey95") +
+    theme_minimal() +
+    labs(title = "Public Provision Counts by Type and Municipality, Germany",
+         subtitle = "OSM POI Data", fill = "POI count")
+  print(p_map_osm)
+  ggsave("./figures/map_poi_osm.png", p_map_osm, width = 10, height = 5, dpi = 300)
+} else {
+  knitr::include_graphics("./figures/map_poi_osm.png")
+}
 ```
 
 Across both figures, the relative spatial distribution of public service provision look very similar in POI-Bund and OSM. For all three service types, higher POI counts are consistently concentrated in densely populated and urbanized areas, especially around major metropolitan regions. This suggests that both datasets point to the same municipalities as key hubs of public service provision, indicating strong agreement in the relative spatial distribution of services across Germany. Importantly, there are no major regions where one dataset shows extensive coverage while the other shows none, and rural areas are represented in much the same way in both datasets. Overall, the maps show a high degree of convergence between POI-Bund and OSM in how public service provision proxies are relatively distributed across space.
@@ -621,38 +783,21 @@ survey_context <- survey_data |>
 ```
 
 ::: {.callout-note title="Applying this to your own data"}
-The code above is not executed here because this tool uses a pre-linked synthetic dataset. However, if you are working with your own georeferenced survey data, this is the code you would run to merge the POI counts from Parts One through Three onto your survey respondents. The only requirement is a shared municipality identifier (`mun_id`) across the survey and POI data. After the join, respondents in municipalities where a given POI type was not recorded will have `NA` on the corresponding count variable, which we address below.
+The code above shows how to merge POI counts from Parts 1–3 onto individual survey respondents. If you are working with your own georeferenced survey data, run this code after completing Parts 1–3. The only requirement is a shared municipality identifier (`mun_id`) across the survey and POI data. After the join, respondents in municipalities where a given POI type was not recorded will have `NA` on the corresponding count variable, which is addressed below via zero imputation.
+
+In this tool, Part 4 always runs on the three simulated datasets (`sim_survey`, `sim_osm_poi`, `sim_official_poi`) joined by `mun_id`, as shown in the code block below.
 :::
 
-For this tool, we load the pre-linked synthetic survey-context dataset directly:
+For this tool, Part 4 always runs on simulated data. The simulated survey responses are linked to the simulated POI datasets via the shared municipality identifier:
 
 ```{r}
+sim_survey   <- readRDS("./data/sim_survey.rds")
+sim_osm      <- readRDS("./data/sim_osm_poi.rds")
+sim_official <- readRDS("./data/sim_official_poi.rds")
 
-survey_context <- readRDS("./data/simulated_survey_poi.rds")
-
-```
-
-```{r, echo=FALSE, message=FALSE}
-# Harmonize variable names to match the naming conventions used in Parts 1–3.
-survey_context <- survey_context |>
-  dplyr::rename_with(
-    ~ dplyr::case_match(
-      .x,
-      "count_osm_hosp_clean"             ~ "osm_hospital",
-      "count_official_hosp_clean"         ~ "official_hospital",
-      "count_osm_school_clean"            ~ "osm_school",
-      "count_official_school_clean"       ~ "official_school",
-      "count_osm_super_clean"             ~ "osm_supermarket",
-      "count_official_super_clean"        ~ "official_supermarket",
-      "count_osm_hosp_clean_zero"         ~ "osm_hospital_zero",
-      "count_official_hosp_clean_zero"    ~ "official_hospital_zero",
-      "count_osm_school_clean_zero"       ~ "osm_school_zero",
-      "count_official_school_clean_zero"  ~ "official_school_zero",
-      "count_osm_super_clean_zero"        ~ "osm_supermarket_zero",
-      "count_official_super_clean_zero"   ~ "official_supermarket_zero",
-      .default = .x
-    )
-  )
+survey_context <- sim_survey |>
+  dplyr::left_join(sim_osm,      by = "mun_id") |>
+  dplyr::left_join(sim_official, by = "mun_id")
 ```
 
 ```{r}
@@ -669,33 +814,53 @@ Before turning to the regression analysis, we inspect the key variables in the d
 
 ```{r}
 # DV distribution
-cat("service_depri distribution:\n")
-print(round(prop.table(table(survey_context$service_depri, useNA = "ifany")), 3))
+dv_summary <- survey_context |>
+  dplyr::filter(!is.na(service_depri)) |>
+  dplyr::count(service_depri) |>
+  dplyr::mutate(prop = n / sum(n))
 
-cat("\nMean:", round(mean(survey_context$service_depri, na.rm = TRUE), 2), "\n")
-cat("SD:", round(sd(survey_context$service_depri, na.rm = TRUE), 2), "\n")
-cat("% missing:", round(mean(is.na(survey_context$service_depri)) * 100, 1), "%\n")
+dv_mean   <- round(mean(survey_context$service_depri, na.rm = TRUE), 2)
+dv_sd     <- round(sd(survey_context$service_depri,   na.rm = TRUE), 2)
+dv_miss   <- round(mean(is.na(survey_context$service_depri)) * 100, 1)
+
+ggplot(dv_summary, aes(x = factor(service_depri), y = prop)) +
+  geom_col(fill = "#014AAD", alpha = 0.85, width = 0.6) +
+  geom_text(aes(label = scales::percent(prop, accuracy = 0.1)),
+            vjust = -0.5, size = 3.5, color = "grey30") +
+  scale_y_continuous(labels = scales::percent_format(),
+                     limits = c(0, max(dv_summary$prop) * 1.18),
+                     expand = c(0, 0)) +
+  labs(
+    x = "Perceived Infrastructural Deprivation",
+    y = "Share of respondents",
+    caption = paste0("Mean = ", dv_mean, "  \u2022  SD = ", dv_sd,
+                     "  \u2022  Missing: ", dv_miss, "%  \u2022  ",
+                     "0 = low deprivation, 4 = high deprivation")
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.caption = element_text(color = "grey50", size = 9))
 ```
 
 ### Individual-Level Controls
 
 ```{r}
-cat("=== Demographics ===\n\n")
-cat("Age:\n")
-cat("  Mean:", round(mean(survey_context$age, na.rm = TRUE), 1), "\n")
-cat("  SD:", round(sd(survey_context$age, na.rm = TRUE), 1), "\n")
-cat("  Range:", min(survey_context$age, na.rm = TRUE), "-",
-    max(survey_context$age, na.rm = TRUE), "\n")
-cat("  % missing:", round(mean(is.na(survey_context$age)) * 100, 1), "%\n\n")
+pct <- function(x) paste0(round(mean(x, na.rm = TRUE) * 100, 1), "%")
+mis <- function(x) paste0(round(mean(is.na(x)) * 100, 1), "%")
 
-cat("Gender:\n")
-cat("  % female:", round(mean(survey_context$female, na.rm = TRUE) * 100, 1), "%\n")
-cat("  % missing:", round(mean(is.na(survey_context$female)) * 100, 1), "%\n\n")
+controls_table <- tibble::tribble(
+  ~Variable,             ~Statistic,                                                    ~`Missing (%)`,
+  "Age",                 paste0("Mean = ", round(mean(survey_context$age, na.rm = TRUE), 1),
+                                ", SD = ", round(sd(survey_context$age, na.rm = TRUE), 1),
+                                ", Range: ", min(survey_context$age, na.rm = TRUE),
+                                "\u2013", max(survey_context$age, na.rm = TRUE)),         mis(survey_context$age),
+  "Female",              pct(survey_context$female),                                    mis(survey_context$female),
+  "Education: low",      pct(survey_context$edu_low),                                   "—",
+  "Education: mid",      pct(survey_context$edu_mid),                                   "—",
+  "Education: high",     pct(survey_context$edu_high),                                  "—"
+)
 
-cat("Education:\n")
-cat("  % low:", round(mean(survey_context$edu_low, na.rm = TRUE) * 100, 1), "%\n")
-cat("  % mid:", round(mean(survey_context$edu_mid, na.rm = TRUE) * 100, 1), "%\n")
-cat("  % high:", round(mean(survey_context$edu_high, na.rm = TRUE) * 100, 1), "%\n")
+knitr::kable(controls_table, align = c("l", "l", "c"),
+             col.names = c("Variable", "Summary", "Missing (%)"))
 ```
 
 ### Municipality-Level POI Counts
@@ -717,14 +882,20 @@ mun_level <- survey_context |>
     .groups = "drop"
   )
 
-cat("POI count distributions at the municipality level for respondents:\n\n")
-for (v in poi_vars) {
+poi_stats <- purrr::map_dfr(poi_vars, function(v) {
   x <- mun_level[[v]]
-  cat(sprintf("%-30s mean=%5.1f  sd=%6.1f  median=%4.0f  max=%5.0f  %%NA=%4.1f%%\n",
-              v, mean(x, na.rm = TRUE), sd(x, na.rm = TRUE),
-              median(x, na.rm = TRUE), max(x, na.rm = TRUE),
-              mean(is.na(x)) * 100))
-}
+  tibble::tibble(
+    Variable = v,
+    Mean     = round(mean(x, na.rm = TRUE), 1),
+    SD       = round(sd(x,   na.rm = TRUE), 1),
+    Median   = median(x, na.rm = TRUE),
+    Max      = max(x, na.rm = TRUE),
+    `% NA`   = paste0(round(mean(is.na(x)) * 100, 1), "%")
+  )
+})
+
+knitr::kable(poi_stats, align = c("l", "r", "r", "r", "r", "r"),
+             caption = "POI count distributions at the municipality level")
 ```
 
 The `NA` values are particularly frequent for hospitals, which is expected: many smaller municipalities do not have a hospital within their boundaries. However, these missing values pose a practical problem for regression analysis: by default, we would perform listwise deletion, meaning that any respondent whose municipality has an `NA` on the POI predictor is excluded from the model entirely. For hospitals, this can result in a substantial loss of observations, as all respondents in municipalities without a hospital would be dropped from the analysis.
@@ -756,13 +927,20 @@ mun_level_zero <- survey_context |>
     .groups = "drop"
   )
 
-cat("POI count distributions after zero imputation:\n\n")
-for (v in poi_vars_zero) {
+poi_zero_stats <- purrr::map_dfr(poi_vars_zero, function(v) {
   x <- mun_level_zero[[v]]
-  cat(sprintf("%-30s mean=%5.1f  sd=%6.1f  median=%4.0f  max=%5.0f  %%zero=%4.1f%%\n",
-              v, mean(x), sd(x), median(x), max(x),
-              mean(x == 0) * 100))
-}
+  tibble::tibble(
+    Variable = v,
+    Mean     = round(mean(x), 1),
+    SD       = round(sd(x),   1),
+    Median   = median(x),
+    Max      = max(x),
+    `% Zero` = paste0(round(mean(x == 0) * 100, 1), "%")
+  )
+})
+
+knitr::kable(poi_zero_stats, align = c("l", "r", "r", "r", "r", "r"),
+             caption = "POI count distributions after zero imputation")
 ```
 
 ## Multilevel Model Specification

@@ -418,6 +418,127 @@ cat("\nNo real IDs in output:",
 cat("Sample mun_ids:", head(unique(simulated_survey_context$mun_id), 5), "\n")
 
 
-# Save ----
+# Save Linked Data ----
 
 saveRDS(simulated_survey_context, "./data/simulated_survey_poi.rds")
+#simulated_survey_context <- readRDS("./data/simulated_survey_poi.rds")
+
+
+# Load shapefile and extract real municipality IDs ----
+
+shp <- sf::st_read("./data/municipalites_2021_epsg4326.shp", quiet = TRUE)
+
+cat("Shapefile columns:", paste(names(shp), collapse = ", "), "\n")
+
+# Drop geometry; work with attribute table only
+shp_attr <- sf::st_drop_geometry(shp)
+
+# Identify the municipality ID column (AGS is standard for German municipalities)
+id_col <- if ("mun_id" %in% names(shp_attr)) {
+  "mun_id"
+} else {
+  # Fall back to the first character/factor column that looks like an ID
+  candidates <- names(shp_attr)[sapply(shp_attr, function(x) is.character(x) | is.factor(x))]
+  cat("AGS not found; candidate ID columns:", paste(candidates, collapse = ", "), "\n")
+  candidates[1]
+}
+
+cat("Using municipality ID column:", id_col, "\n\n")
+
+real_mun_ids <- as.character(shp_attr[[id_col]])
+real_mun_ids <- unique(real_mun_ids[!is.na(real_mun_ids)])
+
+cat("Real municipality IDs available:", length(real_mun_ids), "\n")
+
+
+# Replace fake mun_ids with real ones ----
+
+fake_ids <- unique(simulated_survey_context$mun_id)
+n_fake   <- length(fake_ids)
+
+if (n_fake > length(real_mun_ids)) {
+  stop(sprintf(
+    "Not enough real municipality IDs (%d) to replace %d fake IDs.",
+    length(real_mun_ids), n_fake
+  ))
+}
+
+sampled_real_ids <- sample(real_mun_ids, size = n_fake, replace = FALSE)
+
+id_map <- tibble::tibble(
+  mun_id      = fake_ids,
+  mun_id_real = sampled_real_ids
+)
+
+cat(sprintf("Replacing %d fake IDs with %d sampled real IDs\n\n", n_fake, n_fake))
+
+simulated_survey_context <- simulated_survey_context |>
+  dplyr::left_join(id_map, by = "mun_id") |>
+  dplyr::mutate(mun_id = mun_id_real) |>
+  dplyr::select(-mun_id_real)
+
+
+# Define column groups ----
+
+survey_vars <- c("lfdn", "mun_id", "service_depri",
+                 "female", "age", "edu_low", "edu_mid", "edu_high")
+
+osm_vars      <- c("mun_id", grep("^osm_",      names(simulated_survey_context), value = TRUE)) |> (\(x) x[!grepl("_zero$", x)])()
+official_vars <- c("mun_id", grep("^official_", names(simulated_survey_context), value = TRUE)) |> (\(x) x[!grepl("_zero$", x)])()
+
+
+# Create sim_survey (individual-level) ----
+
+sim_survey <- simulated_survey_context |>
+  dplyr::select(all_of(survey_vars))
+
+cat("=== sim_survey ===\n")
+cat("  Rows:", nrow(sim_survey), "\n")
+cat("  Columns:", paste(names(sim_survey), collapse = ", "), "\n\n")
+
+
+# Create sim_osm_poi (municipality-level, one row per municipality) ----
+
+sim_osm_poi <- simulated_survey_context |>
+  dplyr::select(all_of(osm_vars)) |>
+  dplyr::distinct(mun_id, .keep_all = TRUE)
+
+cat("=== sim_osm_poi ===\n")
+cat("  Rows:", nrow(sim_osm_poi), "\n")
+cat("  Columns:", paste(names(sim_osm_poi), collapse = ", "), "\n\n")
+
+
+# Create sim_official_poi (municipality-level, one row per municipality) ----
+
+sim_official_poi <- simulated_survey_context |>
+  dplyr::select(all_of(official_vars)) |>
+  dplyr::distinct(mun_id, .keep_all = TRUE)
+
+cat("=== sim_official_poi ===\n")
+cat("  Rows:", nrow(sim_official_poi), "\n")
+cat("  Columns:", paste(names(sim_official_poi), collapse = ", "), "\n\n")
+
+
+# Validate ----
+
+cat("=== Validation ===\n")
+
+# All survey mun_ids appear in POI datasets
+survey_ids <- unique(sim_survey$mun_id)
+cat("Survey mun_ids in sim_osm_poi:     ",
+    all(survey_ids %in% sim_osm_poi$mun_id), "\n")
+cat("Survey mun_ids in sim_official_poi:",
+    all(survey_ids %in% sim_official_poi$mun_id), "\n")
+
+# No fake IDs remain
+cat("No fake IDs (mun_*) remaining:     ",
+    !any(grepl("^mun_", sim_survey$mun_id)), "\n")
+
+cat("Sample real mun_ids:", head(unique(sim_survey$mun_id), 5), "\n\n")
+
+
+# Save ----
+
+saveRDS(sim_survey,       "./data/sim_survey.rds")
+saveRDS(sim_osm_poi,      "./data/sim_osm_poi.rds")
+saveRDS(sim_official_poi, "./data/sim_official_poi.rds")

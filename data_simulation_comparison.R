@@ -7,7 +7,6 @@ library(ggplot2)
 library(tidyr)
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-
 # Define variables ----
 
 poi_names_clean <- c(
