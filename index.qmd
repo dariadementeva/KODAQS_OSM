@@ -149,7 +149,6 @@ head(german_municipalities)
 ```
 
 
-
 # Tool application {#tool-application}
 
 ## Part One: Getting Started with OSM POI Data
@@ -159,7 +158,7 @@ head(german_municipalities)
 There are many ways to access OSM data. Users can request custom subsets through the [Overpass API](https://overpass-api.de/), use the `osmdata` R package, download OSM shapefile extracts from [Geofabrik](https://download.geofabrik.de/europe/germany.html), or rely on web-based services, such as [Protomaps](https://protomaps.com/), [BBBike](https://extract.bbbike.org/), or similar platforms. All of these sources draw from the global [OSM database](https://www.openstreetmap.org/relation/62578), but they differ in their level of detail, geographic coverage, and update frequency. For beginners, as well as for more experienced users who prefer working with spatial files, we recommend starting with the shapefiles provided by Geofabrik. Compared to other OSM data providers, Geofabrik offers clean, well-structured, and de-anonymized datasets that include geometries, place names, coordinates, built environment feature classes, and other key tags. The attribute set is streamlined and comprehensive, so the shapefiles are suited both for users new to OSM and for the needs of this tool.
 
 ::: {.callout-note title="FYI"}
-How to obtain shapefiles from Geobfabrik? For the sake of brevity, we omit a detailed discussion of how to obtain the shapefiles and instead refer users to the designated [instructional script](Geofabrik_data_access_instruction.Rmd).
+How to obtain shapefiles from Geobfabrik? For the sake of brevity, we omit a detailed discussion of how to obtain the shapefiles and instead refer users to the designated [instructional script](OSM_Geofabrik_Data_Access.Rmd).
 :::
 
 ### Read in OSM POI Data
