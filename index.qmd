@@ -164,7 +164,7 @@ Once all the shapefiles are obtained, we can read them into R. First, the files 
 
 A complication arises from the fact that there is no single OSM shapefile for Germany. Instead, the shapefiles are organized by the German 16 federal states and (occasionally) administrative area/governmental unit (i.e., *Regierungsbezirke*^[Regierungsbezirke are second-level administrative divisions in some German federal states used to coordinate government administration between the state and district levels]). Below, we extract OSM data for each federal state or administrative area by reading in their respective shapefiles. 
 
-Note that OSM features stored in the shapefiles are extracted into different layers depending on their type. For example, OSM features represented as areas, or polygons, will be written to the layer **with an _a suffix** (`gis_osm_pois_a_free_1`, see below), while features represented as points will be stored to the layer **without** an _a suffix.
+Note that OSM features stored in the shapefiles are extracted into different layers depending on their type. For example, OSM features represented as areas, or polygons, will be written to the layer **with an _a suffix** (`gis_osm_pois_a_free_1`, see below), while features represented as points will be stored to the layer **without** an _a suffix (`gis_osm_pois_free_1`, see below).
 
 ```{r, eval=FALSE}
 
