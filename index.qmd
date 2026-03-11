@@ -163,7 +163,9 @@ How to obtain shapefiles from Geobfabrik? For the sake of brevity, we omit a det
 
 Once all the shapefiles are obtained, we can read them into R. First, the files are unzipped and their file paths are specified so they can be accessed within the R environment. Because POI in OSM may be represented using different geometries, both point and polygon layers are read to ensure complete coverage of POI features. Point features are defined by longitude and latitude coordinates representing a single location (e.g., a school or hospital), while polygon features represent area extents defined by multiple coordinates forming closed shapes (e.g., hospital complexes or supermarket buildings). Reading both layers ensures that all relevant OSM POI representations are captured.
 
-A complication arises from the fact that there is no single OSM shapefile for Germany. Instead, the shapefiles are organized by the German 16 federal states and (occasionally) administrative area/governmental unit (i.e., *Regierungsbezirke*^[Regierungsbezirke are second-level administrative divisions in some German federal states used to coordinate government administration between the state and district levels]). Below, we extract OSM data for each federal state or administrative area by reading in their respective shapefiles.
+A complication arises from the fact that there is no single OSM shapefile for Germany. Instead, the shapefiles are organized by the German 16 federal states and (occasionally) administrative area/governmental unit (i.e., *Regierungsbezirke*^[Regierungsbezirke are second-level administrative divisions in some German federal states used to coordinate government administration between the state and district levels]). Below, we extract OSM data for each federal state or administrative area by reading in their respective shapefiles. 
+
+Note that OSM features stored in the shapefiles are extracted into different layers depending on their type. For example, OSM features represented as areas, or polygons, will be written to the layer **with an _a suffix** (`gis_osm_pois_a_free_1`, see below), while features represented as points will be stored to the layer **without** an _a suffix.
 
 ```{r, eval=FALSE}
 
@@ -201,13 +203,13 @@ files <- c(
 
 for (nm in names(files)) { 
   assign(nm, st_read(dsn = file.path("./data", files[[nm]]),
-                     layer = "gis_osm_pois_free_1", quiet = TRUE))
+                     layer = "gis_osm_pois_free_1", quiet = TRUE)) # features drawn as line/point will be written to the layer without an _a suffix.
 }
 
 for (nm in names(files)) {  
   assign(paste0(nm, "_poly"),
          st_read(dsn = file.path("./data", files[[nm]]),
-                 layer = "gis_osm_pois_a_free_1", quiet = TRUE))
+                 layer = "gis_osm_pois_a_free_1", quiet = TRUE)) # features drawn as area will be written to the layer with an _a suffix
 }
 
 ```
