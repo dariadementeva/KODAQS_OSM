@@ -36,7 +36,7 @@ poi_names_zero <- paste0(poi_names_clean, "_zero")
 ## Extract original data ----
 
 # survey_context.RDS is created in original script with original geocoded data
-# (....Nextcloud\kodaqs_osm_poi\code\survey_context.R)
+# (./code/survey_context.R)
 
 orig <- survey_context |>
   dplyr::select(
