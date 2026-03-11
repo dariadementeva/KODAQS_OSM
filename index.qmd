@@ -108,7 +108,7 @@ From Part 4 onwards, the tool uses a fully synthetic dataset that can be execute
 
 Several R packages support geospatial data processing. We rely primarily on `sp`, a well-established geospatial package, and `sf`, a newer framework for managing spatial data. Several highly well-known packages (e.g., `dplyr`, `ggplot2`, `rlang`, `tibble`, and alike) are used for data wrangling, visualization, statistical analysis, and general code support.
 
-```{r, results="hide", message=FALSE, warning=FALSE}
+```{r, echo = TRUE, results="hide", message=FALSE, warning=FALSE}
 
 # Load required packages
 
