@@ -433,7 +433,7 @@ Geodetic CRS:  WGS 84
 <span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(nm, <span class="st">"_poly"</span>),</span>
 <span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>         <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="fu">file.path</span>(<span class="st">"./data"</span>, files[[nm]]),</span>
 <span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>                 </span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>                 <span class="co">#  features drawn as area will be written to </span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>                 <span class="co"># features drawn as area will be written to </span></span>
 <span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>                 <span class="co"># the layer with an _a suffix</span></span>
 <span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>                 </span>
 <span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>                 <span class="at">layer =</span> <span class="st">"gis_osm_pois_a_free_1"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)) </span>
@@ -706,7 +706,8 @@ POI types after deduplicating
 <section id="coverage-evaluation" class="level2">
 <h2 class="anchored" data-anchor-id="coverage-evaluation">Coverage Evaluation</h2>
 <p>A critical step in using OSM data for proxying public service provision is the evaluation of coverage errors. This step addresses whether OSM-based public service provision indicators may accurately numerically capture the POI they are intended to proxy, and whether potential errors in coverage (over- or undercoverage) may shape substantive conclusions. As we have pointed out earlier, coverage is particularly relevant for POI-based indicators because these measures are typically aggregated to neighborhoods or other administrative units: uneven or incomplete POI coverage can therefore induce measurement error at the aggregate level.</p>
-<p>Following the conceptualization proposed by <span class="citation" data-cites="dementeva2025">Dementeva, Meeusen, and Meuleman (<a href="#ref-dementeva2025" role="doc-biblioref">2025</a>)</span>, coverage in OSM can be understood as the spatial analogue of coverage error in survey sampling. In this perspective, the “population” consists of real-world public service provision facilities (e.g., all schools, supermarkets and hospitals in Germany), while the OSM dataset aims to represent that population. <strong>Coverage is assessed by comparing the actual presence of public service provision features with their representation in an OSM subset</strong>.</p>
+<p>Following the conceptualization proposed by <span class="citation" data-cites="dementeva2025">Dementeva, Meeusen, and Meuleman (<a href="#ref-dementeva2025" role="doc-biblioref">2025</a>)</span>, coverage in OSM can be understood as the spatial analogue of coverage error in survey sampling. In this perspective, the “population” consists of real-world public service provision facilities (e.g., all schools, supermarkets and hospitals in Germany), while the OSM dataset aims to represent that population.</p>
+<p><strong>Coverage is assessed by comparing the actual presence of public service provision features with their representation in an OSM subset</strong>.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="More on Coverage">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -872,7 +873,7 @@ POI types after deduplicating
 <section id="perceived-infrastructural-deprivation" class="level2 callout-body-container callout-body">
 <h2 class="anchored" data-anchor-id="perceived-infrastructural-deprivation">Perceived Infrastructural Deprivation</h2>
 <blockquote class="blockquote">
-<p>GLES Survey Item: <strong>“Society pays too little attention to ensuring that people like me have access to basic infrastructures and services (e.g., post offices, doctors, banks, public transportation, schools, Internet).”</strong></p>
+<p><strong>“Society pays too little attention to ensuring that people like me have access to basic infrastructures and services (e.g., post offices, doctors, banks, public transportation, schools, Internet).”</strong></p>
 </blockquote>
 <p><strong>Response scale</strong></p>
 <p>1 - Strongly agree<br>
