@@ -1,6 +1,6 @@
 ---
 title: "osmBias"
-subtitle: "Bias in the Map, Bias in the Results? Validating OpenStreetMap Point of Interest Data forIndividual-Level Survey-Based Analysis"
+subtitle: "Bias in the Map, Bias in the Results? Validating OpenStreetMap Point of Interest Data for Individual-Level Survey-Based Analysis"
 author:
   - name: "Daria Dementeva, research associate, Urban Development & Mobility, Luxembourg Institute of Socio-Economic Research"
   - name: "Anne-Kathrin Stroppe, research associate,  Survey Data Curation, GESIS – Leibniz Institute for the Social Sciences"
@@ -58,17 +58,9 @@ This tool fills this critical void and serves as an **innovative hands-on primer
 
 As an illustrative example, we examine whether living in an **under-resourced area** from the perspective of public service provision is associated with stronger perceptions of **infrastructural deprivation** (for previous research, see @baybeck2005; @letki2008; @mckay2019; @stroppe2023; @theunissen2024).
 
-::: {.callout-tip}
-## Key Concept: Public Service Provision
+**Public Service Provision** refers to the local availability of essential services and is  operationalized as 
 
-Public service provision refers to the **local availability of essential services**, operationalized as the presence of:
-
-- Hospitals
-- Schools
-- Supermarkets
-
-within the respondents' **immediate residential environment**.
-:::
+> the presence of hospitals, schools, and supermarkets within the respondents' immediate residential environment.
 
 **Perceived infrastructural deprivation** is measured using a single survey item from the *German Longitudinal Election Study 2021*, which captures respondents’ sense of infrastructural disadvantage:
 
@@ -82,9 +74,9 @@ This tool walks users through a step-by-step workflow for preparing, comparing, 
 We suggest treating the tool as a pedagogical and didactical one. It is intended to help researchers become familiar with basic and lightweight OSM POI quality check procedures and to ascertain their fitness for use in a given research application.
 :::
 
-# Data Prerequisites and Simulated Data Approach
+# Data Prerequisites 
 
-To run this tool or to apply to their own applications, researchers should need the following data:
+To run this tool or to apply to their own applications, researchers need the following data:
 
 -   Georeferenced survey data with a geographic identifier (e.g., municipality, ZIP code, or grid cell ID) for each respondent's place of residence.
 
@@ -104,6 +96,8 @@ In compliance with the above, the tool is based on:
 
 -   Shapefiles of POI data from the Points of Interest Federal Dataset (POI-Bund) of the Federal Agency for Cartography and Geodesy (2022)
 
+## Data Restrictions
+
 The code shown in this tool reflects the full workflow as it would run with the original survey, OSM, and POI-Bund data. However, not all data sources can be shared alongside this tool:
 
 - **OSM data** are not included due to the size of the shapefiles. Users who wish to replicate Parts 1-3 with their own OSM data can download the relevant shapefiles from Geofabrik as described below.
@@ -116,15 +110,19 @@ As a result, the code in Parts 1-3 is displayed for illustration but executed si
 
 From Part 4 onwards, the tool uses a fully synthetic dataset that can be executed live. This dataset preserves the distributional properties, correlation structure, and clustering of the original GLES data but does not contain any real respondent information or municipality codes. The synthetic POI counts were calibrated to approximate the distributions observed in the survey-linked data. For details on the data generation procedure, see the accompanying [simulation script](data_simulation.R).
 
+## Overall Workflow
+
 The overall workflow can be summarized as shown below.
 
 ```{mermaid}
-flowchart LR
-    A[GLES Data] --> B[Assign Municipality]
-    B --> C[Link OSM and Official POI Data by Municipality]
-    C --> D[Create Public Service Provision Proxies]
-    D --> E[Run Regression Analyses]
-    E --> F[Compare Results for OSM and Official POI Proxies]
+flowchart TB
+    A1[Obtain GLES Data] --> E
+    A2[Obtain OSM Data from Geofabrik] --> B2[Assign & Deduplicate by Municipality] --> D2[Compare POI Coverage]
+    A3[Obtain Official POI Data] --> B3[Assign to Municipality] --> D2
+    D2 --> E[Link OSM and Official POI Data by Municipality]
+    E --> F[Create Public Service Provision Proxies]
+    F --> G[Run Regression Analyses]
+    G --> H[Compare Results for OSM and Official POI Proxies]
 ```
 
 # Set-up
@@ -145,9 +143,7 @@ library(ggplot2) # for data visualization
 library(lme4) # for fitting linear and generalized linear mixed-effects models
 library(nngeo) # for spatial manipulation based on k-nearest neighbor algorithm
 library(purrr) # for functional programming helpers
-library(rlang)  # for code support and code infrastructure management
 library(sf) # for handling spatial (geometric) data, established package
-library(sp) # for handling spatial (geometric) data, more recent package
 library(stringr) # for handling string data
 library(tibble) # for creating and managing tibbles (special types of data frames)
 library(tidygeocoder) # for running geocoding tasks and handling geocoded data
@@ -161,12 +157,12 @@ library(scales) # for axis label formatting
 To assign POI data to respondents' places of residence, we need the geometries of German municipalities. We rely on the municipality boundaries provided by **the German Federal Agency for Cartography and Geodesy (BKG)**, available through the [**Open Data portal ArcGIS Hub**](https://hub.arcgis.com/maps/60eb682c95f44ba7b10fee66d871859d). When loading the municipality shapefile, we check for three potential sources of error, following the recommendations outlined in the [**AreaMatch**](https://kodaqs-toolbox.gesis.org/github.com/StefanJuenger/zipmatching/index/) tool: (1) a consistent coordinate reference system (CRS) across all spatial datasets, (2) timeliness of administrative boundaries and territorial reforms, and (3) the existence, column names, and format of identifiers and variables of interest.
 
 ```{r, message=FALSE, warning=FALSE}
-german_municipalities <- st_read("./data/municipalites_2021_epsg4326.shp", quiet = TRUE)
+german_municipalities <- sf::st_read("./data/municipalites_2021_epsg4326.shp", quiet = TRUE)
 ```
 
 ```{r, message=FALSE, warning=FALSE}
 # check coordinate reference system
-st_crs(german_municipalities)  
+sf::st_crs(german_municipalities)  
 
 # inspect attributes
 head(german_municipalities)  
@@ -227,23 +223,23 @@ files <- c(
   unterfranken_regbez_poi = "unterfranken-latest-free.shp"
 )
 
-for (nm in names(files)) { 
-  assign(nm, st_read(dsn = file.path("./data", files[[nm]]),
-                     
-                     # features drawn as line/point will be written to 
-                     # the layer without an _a suffix
-                     
-                     layer = "gis_osm_pois_free_1", quiet = TRUE)) 
+for (nm in names(files)) {
+  assign(nm, sf::st_read(
+    dsn   = file.path("./data", files[[nm]]),
+    layer = "gis_osm_pois_free_1",
+    quiet = TRUE
+  ))
 }
-
-for (nm in names(files)) {  
-  assign(paste0(nm, "_poly"),
-         st_read(dsn = file.path("./data", files[[nm]]),
-                 
-                 # features drawn as area will be written to 
-                 # the layer with an _a suffix
-                 
-                 layer = "gis_osm_pois_a_free_1", quiet = TRUE)) 
+ 
+for (nm in names(files)) {
+  assign(
+    paste0(nm, "_poly"),
+    sf::st_read(
+      dsn   = file.path("./data", files[[nm]]),
+      layer = "gis_osm_pois_a_free_1",
+      quiet = TRUE
+    )
+  )
 }
 
 ```
@@ -264,24 +260,32 @@ The workflow below extracts public provision proxies from OSM by filtering, summ
 We create two helper functions to filter each administrative area-specific OSM dataset to retain only schools, supermarkets, and hospitals, derive an area identifier from the object name by removing the suffix, row-bind all regions into a single combined dataset, and produce summary counts by public service provision proxies (i.e., OSM feature class, `fclass` below) and administrative-area.
 
 ```{r}
-# Helper functions and constants 
+# --- Helper functions and constants -
+ 
 public_provision_poi <- c("school", "supermarket", "hospital")
-
+ 
 subset_poi <- function(x, keep = public_provision_poi) {
   dplyr::filter(x, fclass %in% keep)
 }
-
+ 
 subset_and_stack <- function(poi_list, suffix_to_remove) {
-  imap_dfr(poi_list, ~ subset_poi(.x) |>
-             mutate(region = str_remove(.y, suffix_to_remove)))
+  purrr::imap_dfr(
+    poi_list,
+    ~ subset_poi(.x) |>
+      dplyr::mutate(region = stringr::str_remove(.y, suffix_to_remove))
+  )
 }
-
+ 
 fclass_freq <- function(poi_list, suffix_to_remove) {
-  imap_dfr(poi_list, ~ subset_poi(.x) |>
-             st_drop_geometry() |>
-             count(fclass, name = "n") |>
-             mutate(region = str_remove(.y, suffix_to_remove)))
+  purrr::imap_dfr(
+    poi_list,
+    ~ subset_poi(.x) |>
+      sf::st_drop_geometry() |>
+      dplyr::count(fclass, name = "n") |>
+      dplyr::mutate(region = stringr::str_remove(.y, suffix_to_remove))
+  )
 }
+ 
 
 ```
 
@@ -366,7 +370,7 @@ Next, a nationwide OSM-based dataset of public provision proxies across Germany 
 ```{r, eval=FALSE}
 common_cols <- intersect(names(poi_polys_all), names(poi_points_all))
 
-germany_poi_all_combined <- bind_rows(
+germany_poi_all_combined <- dplyr::bind_rows(
   poi_polys_all[, common_cols],
   poi_points_all[, common_cols]
 )
@@ -424,14 +428,14 @@ The code then identifies which POI geometries are polygons and replaces those wi
 We then perform a spatial join to attach municipality identifiers and attributes to each POI by checking **whether each POI point lies within a municipality polygon (point-in-polygon overlay**). Finally, we assess match quality by counting the number of POIs that could not be assigned to any municipality, which may occur due to boundary effects.
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
-germany_poi_all_combined <- st_as_sf(germany_poi_all_combined)
-st_crs(germany_poi_all_combined) <- st_crs(german_municipalities)
-geom_type  <- st_geometry_type(germany_poi_all_combined)
+germany_poi_all_combined <- sf::st_as_sf(germany_poi_all_combined)
+st_crs(germany_poi_all_combined) <- sf::st_crs(german_municipalities)
+geom_type  <-sf::st_geometry_type(germany_poi_all_combined)
 is_polygon <- geom_type %in% c("POLYGON", "MULTIPOLYGON")
 germany_poi_all_combined$geometry[is_polygon] <-
-  st_centroid(germany_poi_all_combined$geometry[is_polygon])
-sf_use_s2(FALSE)
-poi_with_municipalities <- st_join(
+  sf::st_centroid(germany_poi_all_combined$geometry[is_polygon])
+sf::sf_use_s2(FALSE)
+poi_with_municipalities <- sf::st_join(
   germany_poi_all_combined,
   german_municipalities,
   join = st_within,
@@ -442,14 +446,14 @@ sum(is.na(poi_with_municipalities$mun_id))
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 if (isTRUE(params$real_data)) {
-  germany_poi_all_combined <- st_as_sf(germany_poi_all_combined)
-  st_crs(germany_poi_all_combined) <- st_crs(german_municipalities)
-  geom_type  <- st_geometry_type(germany_poi_all_combined)
+  germany_poi_all_combined <- sf::st_as_sf(germany_poi_all_combined)
+  st_crs(germany_poi_all_combined) <- sf::st_crs(german_municipalities)
+  geom_type  <- sf::st_geometry_type(germany_poi_all_combined)
   is_polygon <- geom_type %in% c("POLYGON", "MULTIPOLYGON")
   germany_poi_all_combined$geometry[is_polygon] <-
-    st_centroid(germany_poi_all_combined$geometry[is_polygon])
-  sf_use_s2(FALSE)
-  poi_with_municipalities <- st_join(
+    sf::st_centroid(germany_poi_all_combined$geometry[is_polygon])
+  sf::sf_use_s2(FALSE)
+  poi_with_municipalities <- sf::st_join(
     germany_poi_all_combined,
     german_municipalities,
     join = st_within,
@@ -468,26 +472,26 @@ We identified that **`r readRDS("./data/diag_join.rds")$n_na`** POI were not mat
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
 poi_na     <- poi_with_municipalities[is.na(poi_with_municipalities$mun_id), ]
-coords     <- st_coordinates(poi_na)
+coords     <- sf::st_coordinates(poi_na)
 poi_na$lon <- coords[, "X"]
 poi_na$lat <- coords[, "Y"]
 poi_na_rg  <- poi_na |>
-  reverse_geocode(lat = lat, long = lon, method = "arcgis",
+  tidygeocoder::reverse_geocode(lat = lat, long = lon, method = "arcgis",
                   address = address, min_time = 1)
-poi_na_rg$country_code <- str_extract(str_trim(poi_na_rg$address), "[A-Z]{3}$")
+poi_na_rg$country_code <- stringr::str_extract(str_trim(poi_na_rg$address), "[A-Z]{3}$")
 table(poi_na_rg$country_code)
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 if (isTRUE(params$real_data)) {
   poi_na     <- poi_with_municipalities[is.na(poi_with_municipalities$mun_id), ]
-  coords     <- st_coordinates(poi_na)
+  coords     <- sf::st_coordinates(poi_na)
   poi_na$lon <- coords[, "X"]
   poi_na$lat <- coords[, "Y"]
   poi_na_rg  <- poi_na |>
-    reverse_geocode(lat = lat, long = lon, method = "arcgis",
+    tidygeocoder::reverse_geocode(lat = lat, long = lon, method = "arcgis",
                     address = address, min_time = 1)
-  poi_na_rg$country_code <- str_extract(str_trim(poi_na_rg$address), "[A-Z]{3}$")
+  poi_na_rg$country_code <- stringr::str_extract(str_trim(poi_na_rg$address), "[A-Z]{3}$")
   country_table <- table(poi_na_rg$country_code)
   print(country_table)
   saveRDS(list(country_table = country_table), "./data/diag_geocode.rds")
@@ -518,15 +522,15 @@ Because OSM data are not created for academic research and do not qualify as sci
 The deduplication procedure begins by re-projecting all POI from geographic coordinates (degrees) to a projected CRS measured in meters (i.e., EPSG:25832). This re-projection enables accurate distance calculations. Using the projected data, a nearest-neighbor search is conducted in which each point is compared to itself and its closest neighboring point. Neighboring points located within a maximum distance of one meter are flagged as potential duplicates. From these results, all candidate duplicate point pairs are constructed, excluding self-matches and retaining each pair only once. The second point in each identified duplicate pair is then classified as redundant and removed from the original dataset. This process yields a deduplicated POI dataset in which each remaining point represents a unique public service provision proxy.
 
 ```{r, eval=FALSE}
-poi_m     <- st_transform(poi_with_municipalities_ger, 25832)
-nn        <- st_nn(poi_m, poi_m, k = 2, maxdist = 1, returnDist = TRUE)
-dup_pairs <- tibble(
+poi_m     <- sf::st_transform(poi_with_municipalities_ger, 25832)
+nn        <- nngeo::st_nn(poi_m, poi_m, k = 2, maxdist = 1, returnDist = TRUE)
+dup_pairs <- tibble::tibble(
   i = rep(seq_along(nn$nn), lengths(nn$nn)),
   j = unlist(nn$nn)
 ) |>
-  filter(i != j) |>
-  mutate(a = pmin(i, j), b = pmax(i, j)) |>
-  distinct(a, b)
+  dplyr::filter(i != j) |>
+  dplyr::mutate(a = pmin(i, j), b = pmax(i, j)) |>
+  dplyr::distinct(a, b)
 to_drop   <- unique(dup_pairs$b)
 poi_with_municipalities_ger_dedup <- poi_with_municipalities_ger[-to_drop, ]
 
@@ -540,15 +544,15 @@ table(poi_with_municipalities_ger_dedup$fclass)
 
 ```{r, echo=FALSE}
 if (isTRUE(params$real_data)) {
-  poi_m     <- st_transform(poi_with_municipalities_ger, 25832)
-  nn        <- st_nn(poi_m, poi_m, k = 2, maxdist = 1, returnDist = TRUE)
-  dup_pairs <- tibble(
+  poi_m     <- sf::st_transform(poi_with_municipalities_ger, 25832)
+  nn        <- nngeo::st_nn(poi_m, poi_m, k = 2, maxdist = 1, returnDist = TRUE)
+  dup_pairs <- tibble::tibble(
     i = rep(seq_along(nn$nn), lengths(nn$nn)),
     j = unlist(nn$nn)
   ) |>
-    filter(i != j) |>
-    mutate(a = pmin(i, j), b = pmax(i, j)) |>
-    distinct(a, b)
+    dplyr::filter(i != j) |>
+    dplyr::mutate(a = pmin(i, j), b = pmax(i, j)) |>
+    dplyr::distinct(a, b)
   to_drop   <- unique(dup_pairs$b)
   poi_with_municipalities_ger_dedup <- poi_with_municipalities_ger[-to_drop, ]
   cat(nrow(poi_with_municipalities_ger),  "number of POI before deduplicating \n")
@@ -608,10 +612,10 @@ for (nm in names(files2)) {
   assign(nm, st_read(dsn = file.path("./data/", files2[[nm]]), quiet = TRUE))
 }
 
-poi_bund_stacked <- bind_rows(
-  hospitals_de    |> mutate(poi_type = "hospital"),
-  schools_de      |> mutate(poi_type = "school"),
-  supermarkets_de |> mutate(poi_type = "supermarket")
+poi_bund_stacked <- dplyr::bind_rows(
+  hospitals_de    |> dplyr::mutate(poi_type = "hospital"),
+  schools_de      |> dplyr::mutate(poi_type = "school"),
+  supermarkets_de |> dplyr::mutate(poi_type = "supermarket")
 )
 table(poi_bund_stacked$poi_type)
 
@@ -621,10 +625,10 @@ table(poi_bund_stacked$poi_type)
 ```{r, echo=FALSE}
 if (isTRUE(params$real_data)) {
   load("./data/POI_Bund_data.RData")
-  poi_bund_stacked <- bind_rows(
-    hospitals_de    |> mutate(poi_type = "hospital"),
-    schools_de      |> mutate(poi_type = "school"),
-    supermarkets_de |> mutate(poi_type = "supermarket")
+  poi_bund_stacked <- dplyr::bind_rows(
+    hospitals_de    |> dplyr::mutate(poi_type = "hospital"),
+    schools_de      |> dplyr::mutate(poi_type = "school"),
+    supermarkets_de |> dplyr::mutate(poi_type = "supermarket")
   )
   poi_type_table <- table(poi_bund_stacked$poi_type)
   print(poi_type_table)
@@ -658,18 +662,18 @@ More formally, coverage error in OSM consists of two components:
 In this part of the tool, **OSM-based POI measures are benchmarked against official built environment data from BKG**, which are treated as a gold standard. By comparing counts and distributions of public service facilities across the two datasets and German municipalities, the tool enables researchers to quantify and visualize under- and overcoverage in OSM and to critically assess the suitability of OSM data for linking with survey responses. In particular, below, for each public provision service proxy, we count the number of POI in each data source. We visualize these counts using side-by-side bar charts, which allows to directly compare coverage across categories and identify where the two datasets converge or differ in their coverage of public service provision proxies.
 
 ```{r, eval=FALSE}
-combined <- bind_rows(
+combined <- dplyr::bind_rows(
   poi_bund_stacked |>
-    select(category = poi_type) |>
-    mutate(dataset = "poi_bund_stacked"),
+    dplyr::select(category = poi_type) |>
+    dplyr::mutate(dataset = "poi_bund_stacked"),
   poi_with_municipalities_ger_dedup |>
-    select(category = fclass) |>
-    mutate(dataset = "poi_with_municipalities")
+    dplyr::select(category = fclass) |>
+    dplyr::mutate(dataset = "poi_with_municipalities")
 )
 
-ggplot(combined, aes(x = category, fill = dataset)) +
-  geom_bar(position = "dodge") +
-  scale_fill_manual(
+ggplot2::ggplot(combined, aes(x = category, fill = dataset)) +
+  ggplot2::geom_bar(position = "dodge") +
+  ggplot2::scale_fill_manual(
     values = c(
       "poi_bund_stacked"        = "#014AAD",
       "poi_with_municipalities" = "#CBDDFE"
@@ -679,28 +683,28 @@ ggplot(combined, aes(x = category, fill = dataset)) +
       "poi_with_municipalities" = "German OpenStreetMap Data"
     )
   ) +
-  scale_y_continuous(
+  ggplot2::scale_y_continuous(
     limits = c(0, 40000),
     labels = scales::label_comma(big.mark = ".", decimal.mark = ",")
   ) +
-  labs(x = "Public Service Provision Proxies", y = "POI Count", fill = "Dataset") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  ggplot2::labs(x = "Public Service Provision Proxies", y = "POI Count", fill = "Dataset") +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ```{r, echo=FALSE}
 if (isTRUE(params$real_data)) {
-  combined <- bind_rows(
+  combined <- dplyr::bind_rows(
     poi_bund_stacked |>
-      select(category = poi_type) |>
-      mutate(dataset = "poi_bund_stacked"),
+      dplyr::select(category = poi_type) |>
+      dplyr::mutate(dataset = "poi_bund_stacked"),
     poi_with_municipalities_ger_dedup |>
-      select(category = fclass) |>
-      mutate(dataset = "poi_with_municipalities")
+      dplyr::select(category = fclass) |>
+      dplyr::mutate(dataset = "poi_with_municipalities")
   )
-  p_bar <- ggplot(combined, aes(x = category, fill = dataset)) +
-    geom_bar(position = "dodge") +
-    scale_fill_manual(
+  p_bar <- ggplot2::ggplot(combined, aes(x = category, fill = dataset)) +
+    ggplot2::geom_bar(position = "dodge") +
+    ggplot2::scale_fill_manual(
       values = c(
         "poi_bund_stacked"        = "#014AAD",
         "poi_with_municipalities" = "#CBDDFE"
@@ -710,15 +714,15 @@ if (isTRUE(params$real_data)) {
         "poi_with_municipalities" = "German OpenStreetMap Data"
       )
     ) +
-    scale_y_continuous(
+    ggplot2::scale_y_continuous(
       limits = c(0, 40000),
       labels = scales::label_comma(big.mark = ".", decimal.mark = ",")
     ) +
-    labs(x = "Public Service Provision Proxies", y = "POI Count", fill = "Dataset") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    ggplot2::labs(x = "Public Service Provision Proxies", y = "POI Count", fill = "Dataset") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1))
   print(p_bar)
-  ggsave("./figures/barplot_poi_comparison.png", p_bar, width = 7, height = 5, dpi = 300)
+  ggplot2::ggsave("./figures/barplot_poi_comparison.png", p_bar, width = 7, height = 5, dpi = 300)
 } else {
   knitr::include_graphics("./figures/barplot_poi_comparison.png")
 }
@@ -738,94 +742,94 @@ Next, we compare the spatial distribution of public service provision across dat
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
 counts_osm <- poi_with_municipalities_ger_dedup |>
-  count(mun_id, fclass, name = "poi_count") |>
-  arrange(mun_id, desc(poi_count))
+  dplyr::count(mun_id, fclass, name = "poi_count") |>
+  dplyr::arrange(mun_id, desc(poi_count))
 
 counts_bund <- poi_bund_stacked |>
-  count(mun_id, poi_type, name = "poi_count") |>
-  arrange(mun_id, desc(poi_count))
+  dplyr::count(mun_id, poi_type, name = "poi_count") |>
+  dplyr::arrange(mun_id, desc(poi_count))
 
 poi_bund_with_mun_geom <- counts_bund |>
-  st_drop_geometry() |>
-  left_join(german_municipalities |> select(mun_id, geometry), by = "mun_id") |>
-  st_as_sf()
+  sf::st_drop_geometry() |>
+  dplyr::left_join(german_municipalities |> select(mun_id, geometry), by = "mun_id") |>
+  sf::st_as_sf()
 
 poi_osm_with_mun_geom <- counts_osm |>
-  st_drop_geometry() |>
-  left_join(german_municipalities |> select(mun_id, geometry), by = "mun_id") |>
-  st_as_sf()
+  sf::st_drop_geometry() |>
+  dplyr::left_join(german_municipalities |> select(mun_id, geometry), by = "mun_id") |>
+  sf::st_as_sf()
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 if (isTRUE(params$real_data)) {
   counts_osm <- poi_with_municipalities_ger_dedup |>
-    count(mun_id, fclass, name = "poi_count") |>
-    arrange(mun_id, desc(poi_count))
+    dplyr::count(mun_id, fclass, name = "poi_count") |>
+    dplyr::arrange(mun_id, desc(poi_count))
   counts_bund <- poi_bund_stacked |>
-    count(mun_id, poi_type, name = "poi_count") |>
-    arrange(mun_id, desc(poi_count))
+    dplyr::count(mun_id, poi_type, name = "poi_count") |>
+    dplyr::arrange(mun_id, desc(poi_count))
   poi_bund_with_mun_geom <- counts_bund |>
-    st_drop_geometry() |>
-    left_join(german_municipalities |> select(mun_id, geometry), by = "mun_id") |>
-    st_as_sf()
+    sf::st_drop_geometry() |>
+    dplyr::left_join(german_municipalities |> select(mun_id, geometry), by = "mun_id") |>
+    sf::st_as_sf()
   poi_osm_with_mun_geom <- counts_osm |>
-    st_drop_geometry() |>
-    left_join(german_municipalities |> select(mun_id, geometry), by = "mun_id") |>
-    st_as_sf()
+    sf::st_drop_geometry() |>
+    dplyr::left_join(german_municipalities |> select(mun_id, geometry), by = "mun_id") |>
+    sf::st_as_sf()
 }
 ```
 
 ```{r, eval=FALSE}
-ggplot(poi_bund_with_mun_geom) +
-  geom_sf(aes(fill = poi_count), color = NA) +
-  facet_wrap(~ poi_type) +
-  scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
+ggplot2::ggplot(poi_bund_with_mun_geom) +
+  ggplot2::geom_sf(aes(fill = poi_count), color = NA) +
+  ggplot2::facet_wrap(~ poi_type) +
+  ggplot2::scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
                       limits = c(0, 1500), na.value = "grey95") +
-  theme_minimal() +
-  labs(title = "Public Provision Counts by Type and Municipality, Germany",
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Public Provision Counts by Type and Municipality, Germany",
        subtitle = "Official POI Data: POI-Bund", fill = "POI count")
 ```
 
 ```{r, echo=FALSE}
 if (isTRUE(params$real_data)) {
-  p_map_bund <- ggplot(poi_bund_with_mun_geom) +
-    geom_sf(aes(fill = poi_count), color = NA) +
-    facet_wrap(~ poi_type) +
-    scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
+  p_map_bund <- ggplot2::ggplot(poi_bund_with_mun_geom) +
+    ggplot2::geom_sf(aes(fill = poi_count), color = NA) +
+    ggplot2::facet_wrap(~ poi_type) +
+    ggplot2::scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
                         limits = c(0, 1500), na.value = "grey95") +
-    theme_minimal() +
-    labs(title = "Public Provision Counts by Type and Municipality, Germany",
+    ggplot2::theme_minimal() +
+    ggplot2::labs(title = "Public Provision Counts by Type and Municipality, Germany",
          subtitle = "Official POI Data: POI-Bund", fill = "POI count")
   print(p_map_bund)
-  ggsave("./figures/map_poi_bund.png", p_map_bund, width = 10, height = 5, dpi = 300)
+  ggplot2::ggsave("./figures/map_poi_bund.png", p_map_bund, width = 10, height = 5, dpi = 300)
 } else {
   knitr::include_graphics("./figures/map_poi_bund.png")
 }
 ```
 
 ```{r, eval=FALSE}
-ggplot(poi_osm_with_mun_geom) +
-  geom_sf(aes(fill = poi_count), color = NA) +
-  facet_wrap(~ fclass) +
-  scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
+ggplot2::ggplot(poi_osm_with_mun_geom) +
+  ggplot2::geom_sf(aes(fill = poi_count), color = NA) +
+  ggplot2::facet_wrap(~ fclass) +
+  ggplot2::scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
                       limits = c(0, 1500), na.value = "grey95") +
-  theme_minimal() +
-  labs(title = "Public Provision Counts by Type and Municipality, Germany",
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Public Provision Counts by Type and Municipality, Germany",
        subtitle = "OSM POI Data", fill = "POI count")
 ```
 
 ```{r, echo=FALSE}
 if (isTRUE(params$real_data)) {
-  p_map_osm <- ggplot(poi_osm_with_mun_geom) +
-    geom_sf(aes(fill = poi_count), color = NA) +
-    facet_wrap(~ fclass) +
-    scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
+  p_map_osm <- ggplot2::ggplot(poi_osm_with_mun_geom) +
+    ggplot2::geom_sf(aes(fill = poi_count), color = NA) +
+    ggplot2::facet_wrap(~ fclass) +
+    ggplot2::scale_fill_gradient(low = "#deebf7", high = "#08306b", trans = "sqrt",
                         limits = c(0, 1500), na.value = "grey95") +
-    theme_minimal() +
-    labs(title = "Public Provision Counts by Type and Municipality, Germany",
+    ggplot2::theme_minimal() +
+    ggplot2::labs(title = "Public Provision Counts by Type and Municipality, Germany",
          subtitle = "OSM POI Data", fill = "POI count")
   print(p_map_osm)
-  ggsave("./figures/map_poi_osm.png", p_map_osm, width = 10, height = 5, dpi = 300)
+  ggplot2::ggsave("./figures/map_poi_osm.png", p_map_osm, width = 10, height = 5, dpi = 300)
 } else {
   knitr::include_graphics("./figures/map_poi_osm.png")
 }
@@ -833,7 +837,7 @@ if (isTRUE(params$real_data)) {
 
 Across both figures, the relative spatial distribution of public service provision look very similar in POI-Bund and OSM. For all three service types, higher POI counts are consistently concentrated in densely populated and urbanized areas, especially around major metropolitan regions. This suggests that both datasets point to the same municipalities as key hubs of public service provision, indicating strong agreement in the relative spatial distribution of services across Germany. Importantly, there are no major regions where one dataset shows extensive coverage while the other shows none, and rural areas are represented in much the same way in both datasets. Overall, the maps show a high degree of convergence between POI-Bund and OSM in how public service provision proxies are relatively distributed across space.
 
-::: {.callout-important title="Major Take-Away (2)"}
+::: {.callout-tip title="Major Take-Away (2)"}
 Despite differences in data production, both datasets provide a **similar picture of public service coverage in Germany**, suggesting they may serve as **interchangeable proxies for public service provision**.
 :::
 
@@ -926,22 +930,22 @@ dv_mean   <- round(mean(survey_context$service_depri, na.rm = TRUE), 2)
 dv_sd     <- round(sd(survey_context$service_depri,   na.rm = TRUE), 2)
 dv_miss   <- round(mean(is.na(survey_context$service_depri)) * 100, 1)
 
-ggplot(dv_summary, aes(x = factor(service_depri), y = prop)) +
-  geom_col(fill = "#014AAD", alpha = 0.85, width = 0.6) +
-  geom_text(aes(label = scales::percent(prop, accuracy = 0.1)),
+ggplot2::ggplot(dv_summary, aes(x = factor(service_depri), y = prop)) +
+  ggplot2::geom_col(fill = "#014AAD", alpha = 0.85, width = 0.6) +
+  ggplot2::geom_text(aes(label = scales::percent(prop, accuracy = 0.1)),
             vjust = -0.5, size = 3.5, color = "grey30") +
-  scale_y_continuous(labels = scales::percent_format(),
+  ggplot2::scale_y_continuous(labels = scales::percent_format(),
                      limits = c(0, max(dv_summary$prop) * 1.18),
                      expand = c(0, 0)) +
-  labs(
+  ggplot2::labs(
     x = "Perceived Infrastructural Deprivation",
     y = "Share of respondents",
     caption = paste0("Mean = ", dv_mean, "  \u2022  SD = ", dv_sd,
                      "  \u2022  Missing: ", dv_miss, "%  \u2022  ",
                      "0 = low deprivation, 4 = high deprivation")
   ) +
-  theme_minimal(base_size = 12) +
-  theme(plot.caption = element_text(color = "grey50", size = 9))
+  ggplot2::theme_minimal(base_size = 12) +
+  ggplot2::theme(plot.caption = element_text(color = "grey50", size = 9))
 ```
 
 ### Individual-Level Controls
@@ -1078,7 +1082,7 @@ results <- purrr::imap_dfr(predictors, function(vars, label) {
       "service_depri ~ ", v,
       " + age + female + edu_low + edu_high + (1 | mun_id)"
     ))
-    m <- lmer(formula, data = survey_context, REML = FALSE)
+    m <- lme4::lmer(formula, data = survey_context, REML = FALSE)
     broom.mixed::tidy(m, conf.int = TRUE) |>
       dplyr::filter(term == v) |>
       dplyr::mutate(poi_type = label, source = source)
@@ -1089,103 +1093,132 @@ results <- purrr::imap_dfr(predictors, function(vars, label) {
 The coefficient plot below displays the estimated effects of public service provision on perceived infrastructural deprivation, separately for each POI type and data source. The key comparison is between OSM-based estimates (light blue) and official POI-Bund estimates (dark blue). If the confidence intervals overlap substantially, this suggests that the choice of POI data source does not meaningfully alter substantive conclusions.
 
 ```{r, fig.width=8, fig.height=5}
-ggplot(results, aes(x = poi_type, y = estimate, color = source)) +
-  geom_pointrange(
+ggplot2::ggplot(results, aes(x = poi_type, y = estimate, color = source)) +
+  ggplot2::geom_pointrange(
     aes(ymin = conf.low, ymax = conf.high),
     position = position_dodge(width = 0.4),
     size = 0.8
   ) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
   scale_color_manual(
     values = c(osm = "#CBDDFE", official = "#014AAD"),
     labels = c(osm = "OSM", official = "Official (POI-Bund)")
   ) +
-  labs(
+  ggplot2::labs(
     title = "Effect of Public Service Provision on Perceived Infrastructural Deprivation",
     subtitle = "Multilevel models with random intercepts by municipality",
     x = NULL,
     y = "Coefficient estimate (95% CI)",
     color = "Data source"
   ) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+  ggplot2::theme_minimal() +
+  ggplot2::theme(legend.position = "bottom")
 ```
 
 ## Interpretation
 
-::: {.callout-note title = "Major Implications"}
 
-**1. Expected Relationship**
+### Expected Relationship
 
 Across all three proxies of public service provision, the estimated effects are negative. 
-Municipalities with more **hospitals, schools, or supermarkets** are associated with **lower perceived infrastructural deprivation**, controlling for individual demographic characteristics.
+Municipalities with more **hospitals, schools, or supermarkets are associated with lower perceived infrastructural deprivation**, controlling for individual demographic characteristics.
 
-**2. Robustness across Data Sources**
+### Robustness across Data Sources
 
-Estimates derived from **OSM** and **official POI-Bund data** are **very similar** in magnitude, direction, and statistical significance. The substantial overlap of confidence intervals indicates that the **choice of POI data source does not meaningfully affect the substantive conclusions**.
-:::
+Estimates derived from OSM and official POI-Bund data are very similar in magnitude, direction, and statistical significance. The substantial overlap of confidence intervals indicates that the **choice of POI data source does not meaningfully affect the substantive conclusions**.
+
 
 # Conclusion, Recommendations and Future Work {#conclusion-recommendations-future-work}
 
-The goal of this tool was to address a critical gap by providing a **hands-on primer for assessing OSM data quality in survey-based analyses**. Specifically, the tool evaluated the **coverage of OSM POI data** when used as a proxy for **local public service provision** in linked survey data and examined whether differences in coverage translate into different substantive conclusions.
+The goal of this tool was to address a critical gap by providing a 
+**hands-on primer for assessing OSM data quality in survey-based analyses**. 
+Specifically, the tool evaluated the **coverage of OSM POI data** when used 
+as a proxy for **local public service provision** in linked survey data and 
+examined whether differences in coverage translate into different substantive 
+conclusions.
 
-Three main findings are summarized here:
+::: {.callout-important title="Three Main Findings"}
+**1. Comparable coverage across sources**
+OSM-based POI data and official built environment data provide largely 
+comparable coverage of public service provision proxies at both the national 
+and municipal levels.
 
-**First**, OSM-based POI data and official built environment data provide **largely comparable coverage** of public service provision proxies at both the **national and municipal levels**.
+**2. Differences reflect data production practices, not substantive gaps**
+The small differences in coverage primarily reflect differences in tagging 
+and classification conventions. Despite this conceptual non-equivalence, the 
+datasets can be treated as interchangeable for this application.
 
-**Second**, the small differences in coverage primarily reflect **differences in data production and tagging practices**. OSM contributors and official data providers apply distinct rules when recording, classifying, and tagging built environment features, including how facilities such as schools, hospitals, or supermarkets are defined conceptually and geographically. Despite this conceptual non-equivalence, our results suggest that the datasets can be treated as interchangeable for this application.
+**3. Robust regression results across data sources**
+Regression estimates derived from OSM-based and POI-Bund proxies yield 
+highly similar results across all public service provision indicators.
+:::
 
-**Third**, regression estimates derived from **OSM-based and POI-Bund proxies** yield **highly similar results across all public service provision indicators**.
-
-Overall, these findings strengthen confidence that substantive conclusions regarding the relationship between perceived infrastructural deprivation and objective measures of public service provision are largely insensitive to the choice of POI data source. Any analytical error arising from differences in coverage or conceptual definitions across datasets appears to be minimal. Accordingly, our study demonstrates that OSM and official POI data sources can be considered highly interchangeable in survey data linkage-based research, particularly when they are used to operationalize **aggregated measures of built environment availability**.
+Overall, these findings strengthen confidence that substantive conclusions 
+regarding the relationship between perceived infrastructural deprivation and 
+objective measures of public service provision are largely insensitive to the 
+choice of POI data source. Accordingly, OSM and official POI data sources can 
+be considered highly interchangeable in survey data linkage-based research, 
+particularly when operationalizing **aggregated measures of built environment 
+availability**.
 
 ## Key Recommendations
 
-We outline several key methodological recommendations for researchers interested in augmenting survey data with OSM and addressing similar research questions.
+::: {.callout-tip title="Examine non-matches carefully"}
+Explicitly diagnose the sources of non-matches, distinguishing between 
+technical linkage issues (incompatible boundaries or projection mismatches) 
+and data-related issues in OSM itself (tagging errors, administrative 
+misclassification, or cross-border effects).
+:::
 
--   **Carefully examine non-matches when linking OSM data to geographic units (e.g., municipalities, ZIP codes, grid cells).**
+::: {.callout-tip title="Deduplicate OSM data prior to analysis"}
+Systematically cross-check point and polygon layers and remove duplicate 
+features. Spatial neighbor detection algorithms can be used to identify 
+likely duplicates, applying very small distance thresholds (e.g., within 
+1 meter).
+:::
 
-Researchers should explicitly diagnose the sources of non-matches, distinguishing between technical linkage issues (i.e., incompatible geographic boundaries or projection mismatches) and data-related issues in OSM itself (i.e., volunteer tagging errors, administrative misclassification, or cross-border effects).
+::: {.callout-tip title="Understand OSM tagging conventions"}
+Carefully review OSM tagging schemes and community conventions before 
+benchmarking against official data or using OSM as a standalone source. 
+This is essential for evaluating what OSM-based POIs can and cannot capture.
+:::
 
--   **Deduplicate OSM data prior to analysis.**
+::: {.callout-tip title="Benchmark against official data where feasible"}
+Conduct low-effort, aggregated comparisons with administrative or official 
+built environment datasets. When official data are unavailable, address lists 
+of chain facilities or other reliable registries can serve as reference points.
+:::
 
-To minimize redundancy, researchers should systematically cross-check point and polygon layers and remove duplicate features. Spatial neighbor detection algorithms can be used to identify likely duplicates, applying very small distance thresholds (e.g., within 1 meter) to flag potetially duplicated POI.
+::: {.callout-tip title="Run robustness checks on missing data imputation"}
+Use sensitivity analyses to assess whether results are robust to different 
+imputation assumptions, ensuring conclusions are not driven by data 
+preprocessing decisions.
+:::
 
--   **Become familiar with how POI are defined and classified in OSM.**
-
-When benchmarking OSM against official POI data, or when using OSM as a standalone source, researchers should carefully review OSM tagging schemes and community conventions. This is essential for evaluating what OSM-based POIs can capture and where their conceptual limits lie.
-
--   **Where feasible, benchmark OSM against official POI data.**
-
-Researchers should conduct low-effort, aggregated comparisons with administrative or official built environment datasets to verify that OSM provides sufficient coverage. When official data are unavailable, alternative benchmarks, such as address lists of chain supermarkets or other reliable facility registries, can serve as useful reference points.
-
--   **Conduct robustness checks with respect to missing data imputation.**
-
-Sensitivity analyses should be used to assess whether substantive results are robust to different assumptions about missing data and imputation strategies, ensuring that conclusions are not driven by data preprocessing decisions and are relatively free from processing errors.
 
 ## Future Work
 
--   **Expand the range of POI categories.**
+### Expand the range of POI categories
 
 Future research should incorporate additional built environment features, such as post offices, public transport stops, pharmacies, banks and ATMs, to assess whether patterns of coverage as observed for hospitals, schools, and supermarkets generalize to other types of public and commercial infrastructure.
 
--   **Extend to alternative operationalization schemes: Proximity measures**
+### Extend to alternative operationalization schemes: Proximity measures
 
 It is useful to explore individual-level accesibility as captured by distance- or proximity-based indicators as well. It would be interesting to compare the quality and robustness of proximity measures, such as distance to the nearest hospital, school, or supermarket, derived from OSM versus official POI data, as these measures may be differently affected by both coverage and positional accuracy errors (i.e., spatial mismatches between recorded POI coordinates and their true real-world locations, for example when a hospital is mapped 200m away from its actual location) when proxying individual-level access to services.
 
--   **Assess external validity.**
+### Assess external validity
 
 Extending the analysis beyond Germany to countries with varying levels of OSM maturity would allow for an evaluation of how cross-national variations in OSM data quality may shape OSM reliability for survey data linkage-based studies in other contexts.
 
--   **Account for temporal alignment of official and OSM data sources.**
+### Account for temporal alignment of official and OSM data sources
 
 Future studies should prioritize time-compatible comparisons between official POI datasets and OSM extracts, ideally matching reference years to model temporal discrepancies and their impact on coverage.
 
--   **Account for OSM POI coverage dynamics.**
+### Account for OSM POI coverage dynamics
 
 It would be useful to disentangle true coverage gaps from changes driven by POI turnover, particularly for more volatile features, such as supermarkets, in order to insight into the temporal stability of OSM subsets.
 
--   **Investigate the differences between OSM and official POI data.**
+### Investigate the differences between OSM and official POI data
 
 While the differences between OSM and official POI data may appear negligible at first glance, it is worthwhile to identify the reasons why they differ and, most importantly, where they differ. Future work should focus on the relationship between the differences between OSM and official POI data and municipality-level indicators, such as sociodemographic and socioeconomic indicators that may explain why certain areas are more prone to differences than others.
 

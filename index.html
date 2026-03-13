@@ -8,7 +8,7 @@
 
 <meta name="author" content="Daria Dementeva, research associate, Urban Development &amp; Mobility, Luxembourg Institute of Socio-Economic Research">
 <meta name="author" content="Anne-Kathrin Stroppe, research associate, Survey Data Curation, GESIS – Leibniz Institute for the Social Sciences">
-<meta name="dcterms.date" content="2026-03-11">
+<meta name="dcterms.date" content="2026-03-13">
 
 <title>osmBias</title>
 <style>
@@ -92,7 +92,7 @@ div.csl-indent {
 <link href="index_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="index_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="index_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="index_files/libs/quarto-diagram/mermaid.min.js"></script>
 <script src="index_files/libs/quarto-diagram/mermaid-init.js"></script>
 <link href="index_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
@@ -138,7 +138,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">osmBias</h1>
-<p class="subtitle lead">Bias in the Map, Bias in the Results? Validating OpenStreetMap Point of Interest Data forIndividual-Level Survey-Based Analysis</p>
+<p class="subtitle lead">Bias in the Map, Bias in the Results? Validating OpenStreetMap Point of Interest Data for Individual-Level Survey-Based Analysis</p>
 </div>
 
 
@@ -156,7 +156,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 11, 2026</p>
+      <p class="date">March 13, 2026</p>
     </div>
   </div>
   
@@ -205,25 +205,10 @@ Link POI-based measures to survey responses, estimate parallel multilevel regres
 <p>The growing availability of big geodata allows survey researchers to enrich survey datasets with innovative geographic context measures. This development opens up new research opportunities and strengthens spatial perspectives within established theoretical frameworks. Against this backdrop, the use of crowdsourced geospatial data, such as <strong>OpenStreetMap (OSM)</strong>, has increased substantially in survey-based social science research. However, linking OSM data to survey responses raises important questions about <em>data quality</em> and fitness for use, as the database relies on volunteer contributions and lacks standardized quality assurance procedures. At the same time, comparable official data sources are often unavailable, outdated, costly, or insufficiently detailed for many research applications. OSM thus emerges as a practical and cost-effective alternative. Nevertheless, systematic assessments of OSM data quality remain essential as variations in OSM coverage and accuracy may affect substantive research findings.</p>
 <p>This tool fills this critical void and serves as an <strong>innovative hands-on primer on OSM data quality checks</strong> in survey-based analyses. Specifically, it focuses on assessing the completeness and coverage of OSM POI data when used to objectively proxy local public service provision in survey-based research.</p>
 <p>As an illustrative example, we examine whether living in an <strong>under-resourced area</strong> from the perspective of public service provision is associated with stronger perceptions of <strong>infrastructural deprivation</strong> (for previous research, see <span class="citation" data-cites="baybeck2005">Baybeck and McClurg (<a href="#ref-baybeck2005" role="doc-biblioref">2005</a>)</span>; <span class="citation" data-cites="letki2008">Letki (<a href="#ref-letki2008" role="doc-biblioref">2008</a>)</span>; <span class="citation" data-cites="mckay2019">McKay (<a href="#ref-mckay2019" role="doc-biblioref">2019</a>)</span>; <span class="citation" data-cites="stroppe2023">Stroppe (<a href="#ref-stroppe2023" role="doc-biblioref">2023</a>)</span>; <span class="citation" data-cites="theunissen2024">Theunissen (<a href="#ref-theunissen2024" role="doc-biblioref">2024</a>)</span>).</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Key Concept: Public Service Provision
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Public service provision refers to the <strong>local availability of essential services</strong>, operationalized as the presence of:</p>
-<ul>
-<li>Hospitals</li>
-<li>Schools</li>
-<li>Supermarkets</li>
-</ul>
-<p>within the respondents’ <strong>immediate residential environment</strong>.</p>
-</div>
-</div>
+<p><strong>Public Service Provision</strong> refers to the local availability of essential services and is operationalized as</p>
+<blockquote class="blockquote">
+<p>the presence of hospitals, schools, and supermarkets within the respondents’ immediate residential environment.</p>
+</blockquote>
 <p><strong>Perceived infrastructural deprivation</strong> is measured using a single survey item from the <em>German Longitudinal Election Study 2021</em>, which captures respondents’ sense of infrastructural disadvantage:</p>
 <blockquote class="blockquote">
 <p><em>“Society pays insufficient attention to ensuring access to basic infrastructure and services for people like me.”</em></p>
@@ -244,9 +229,9 @@ Link POI-based measures to survey responses, estimate parallel multilevel regres
 </div>
 </div>
 </section>
-<section id="data-prerequisites-and-simulated-data-approach" class="level1">
-<h1>Data Prerequisites and Simulated Data Approach</h1>
-<p>To run this tool or to apply to their own applications, researchers should need the following data:</p>
+<section id="data-prerequisites" class="level1">
+<h1>Data Prerequisites</h1>
+<p>To run this tool or to apply to their own applications, researchers need the following data:</p>
 <ul>
 <li><p>Georeferenced survey data with a geographic identifier (e.g., municipality, ZIP code, or grid cell ID) for each respondent’s place of residence.</p></li>
 <li><p>Geographic unit geometries (e.g., shapefiles for municipalities, ZIP codes, or grid cells) used to link POI data with respondents’ places of residence.</p></li>
@@ -260,6 +245,8 @@ Link POI-based measures to survey responses, estimate parallel multilevel regres
 <li><p>Shapefiles of points-of-interest (POI) data from the German subset of OpenStreetMap, obtained from Geofabrik (2025)</p></li>
 <li><p>Shapefiles of POI data from the Points of Interest Federal Dataset (POI-Bund) of the Federal Agency for Cartography and Geodesy (2022)</p></li>
 </ul>
+<section id="data-restrictions" class="level2">
+<h2 class="anchored" data-anchor-id="data-restrictions">Data Restrictions</h2>
 <p>The code shown in this tool reflects the full workflow as it would run with the original survey, OSM, and POI-Bund data. However, not all data sources can be shared alongside this tool:</p>
 <ul>
 <li><p><strong>OSM data</strong> are not included due to the size of the shapefiles. Users who wish to replicate Parts 1-3 with their own OSM data can download the relevant shapefiles from Geofabrik as described below.</p></li>
@@ -268,24 +255,30 @@ Link POI-based measures to survey responses, estimate parallel multilevel regres
 </ul>
 <p>As a result, the code in Parts 1-3 is displayed for illustration but executed silently using pre-saved outputs. All printed diagnostics, bar charts, and maps shown in these parts are based on the real data and were saved during a prior run with the original data sources.</p>
 <p>From Part 4 onwards, the tool uses a fully synthetic dataset that can be executed live. This dataset preserves the distributional properties, correlation structure, and clustering of the original GLES data but does not contain any real respondent information or municipality codes. The synthetic POI counts were calibrated to approximate the distributions observed in the survey-linked data. For details on the data generation procedure, see the accompanying <a href="data_simulation.R">simulation script</a>.</p>
+</section>
+<section id="overall-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="overall-workflow">Overall Workflow</h2>
 <p>The overall workflow can be summarized as shown below.</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart LR
-    A[GLES Data] --&gt; B[Assign Municipality]
-    B --&gt; C[Link OSM and Official POI Data by Municipality]
-    C --&gt; D[Create Public Service Provision Proxies]
-    D --&gt; E[Run Regression Analyses]
-    E --&gt; F[Compare Results for OSM and Official POI Proxies]
+<pre class="mermaid mermaid-js">flowchart TB
+    A1[Obtain GLES Data] --&gt; E
+    A2[Obtain OSM Data from Geofabrik] --&gt; B2[Assign &amp; Deduplicate by Municipality] --&gt; D2[Compare POI Coverage]
+    A3[Obtain Official POI Data] --&gt; B3[Assign to Municipality] --&gt; D2
+    D2 --&gt; E[Link OSM and Official POI Data by Municipality]
+    E --&gt; F[Create Public Service Provision Proxies]
+    F --&gt; G[Run Regression Analyses]
+    G --&gt; H[Compare Results for OSM and Official POI Proxies]
 </pre>
 </div>
 <p></p></figure><p></p>
 </div>
 </div>
 </div>
+</section>
 </section>
 <section id="set-up" class="level1">
 <h1>Set-up</h1>
@@ -303,25 +296,23 @@ Link POI-based measures to survey responses, estimate parallel multilevel regres
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4) <span class="co"># for fitting linear and generalized linear mixed-effects models</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nngeo) <span class="co"># for spatial manipulation based on k-nearest neighbor algorithm</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr) <span class="co"># for functional programming helpers</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rlang)  <span class="co"># for code support and code infrastructure management</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># for handling spatial (geometric) data, established package</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sp) <span class="co"># for handling spatial (geometric) data, more recent package</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr) <span class="co"># for handling string data</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble) <span class="co"># for creating and managing tibbles (special types of data frames)</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidygeocoder) <span class="co"># for running geocoding tasks and handling geocoded data</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr) <span class="co"># for data reshaping</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales) <span class="co"># for axis label formatting</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># for handling spatial (geometric) data, established package</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr) <span class="co"># for handling string data</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble) <span class="co"># for creating and managing tibbles (special types of data frames)</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidygeocoder) <span class="co"># for running geocoding tasks and handling geocoded data</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr) <span class="co"># for data reshaping</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales) <span class="co"># for axis label formatting</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="read-in-geospatial-data-on-german-municipalities" class="level3">
 <h3 class="anchored" data-anchor-id="read-in-geospatial-data-on-german-municipalities">Read in Geospatial Data on German Municipalities</h3>
 <p>To assign POI data to respondents’ places of residence, we need the geometries of German municipalities. We rely on the municipality boundaries provided by <strong>the German Federal Agency for Cartography and Geodesy (BKG)</strong>, available through the <a href="https://hub.arcgis.com/maps/60eb682c95f44ba7b10fee66d871859d"><strong>Open Data portal ArcGIS Hub</strong></a>. When loading the municipality shapefile, we check for three potential sources of error, following the recommendations outlined in the <a href="https://kodaqs-toolbox.gesis.org/github.com/StefanJuenger/zipmatching/index/"><strong>AreaMatch</strong></a> tool: (1) a consistent coordinate reference system (CRS) across all spatial datasets, (2) timeliness of administrative boundaries and territorial reforms, and (3) the existence, column names, and format of identifiers and variables of interest.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>german_municipalities <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"./data/municipalites_2021_epsg4326.shp"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>german_municipalities <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(<span class="st">"./data/municipalites_2021_epsg4326.shp"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check coordinate reference system</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(german_municipalities)  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">st_crs</span>(german_municipalities)  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: WGS 84 
@@ -420,23 +411,23 @@ Geodetic CRS:  WGS 84
 <span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">unterfranken_regbez_poi =</span> <span class="st">"unterfranken-latest-free.shp"</span></span>
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="fu">names</span>(files)) { </span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(nm, <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="fu">file.path</span>(<span class="st">"./data"</span>, files[[nm]]),</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>                     </span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>                     <span class="co"># features drawn as line/point will be written to </span></span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>                     <span class="co"># the layer without an _a suffix</span></span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>                     </span>
-<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>                     <span class="at">layer =</span> <span class="st">"gis_osm_pois_free_1"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)) </span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="fu">names</span>(files)) {  </span>
-<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(nm, <span class="st">"_poly"</span>),</span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>         <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="fu">file.path</span>(<span class="st">"./data"</span>, files[[nm]]),</span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>                 </span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>                 <span class="co"># features drawn as area will be written to </span></span>
-<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>                 <span class="co"># the layer with an _a suffix</span></span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>                 </span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>                 <span class="at">layer =</span> <span class="st">"gis_osm_pois_a_free_1"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="fu">names</span>(files)) {</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(nm, sf<span class="sc">::</span><span class="fu">st_read</span>(</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">dsn   =</span> <span class="fu">file.path</span>(<span class="st">"./data"</span>, files[[nm]]),</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">layer =</span> <span class="st">"gis_osm_pois_free_1"</span>,</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="fu">names</span>(files)) {</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(nm, <span class="st">"_poly"</span>),</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    sf<span class="sc">::</span><span class="fu">st_read</span>(</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">dsn   =</span> <span class="fu">file.path</span>(<span class="st">"./data"</span>, files[[nm]]),</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>      <span class="at">layer =</span> <span class="st">"gis_osm_pois_a_free_1"</span>,</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
@@ -445,24 +436,31 @@ Geodetic CRS:  WGS 84
 <p>The workflow below extracts public provision proxies from OSM by filtering, summarizing, and combining both point-based and polygon-based POI datasets. Administrative area-specific identifiers are derived from object names, allowing all area-specific datasets to be stacked into a single nationwide dataset. The workflow also computes frequency counts of each proxy type by administrative area and geometry type (points and polygons), and finally merges point and polygon features using their shared attributes to produce a unified, nationwide OSM-based dataset of public provision proxies across Germany.</p>
 <p>We create two helper functions to filter each administrative area-specific OSM dataset to retain only schools, supermarkets, and hospitals, derive an area identifier from the object name by removing the suffix, row-bind all regions into a single combined dataset, and produce summary counts by public service provision proxies (i.e., OSM feature class, <code>fclass</code> below) and administrative-area.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Helper functions and constants </span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>public_provision_poi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"school"</span>, <span class="st">"supermarket"</span>, <span class="st">"hospital"</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>subset_poi <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">keep =</span> public_provision_poi) {</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(x, fclass <span class="sc">%in%</span> keep)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>subset_and_stack <span class="ot">&lt;-</span> <span class="cf">function</span>(poi_list, suffix_to_remove) {</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">imap_dfr</span>(poi_list, <span class="sc">~</span> <span class="fu">subset_poi</span>(.x) <span class="sc">|&gt;</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>             <span class="fu">mutate</span>(<span class="at">region =</span> <span class="fu">str_remove</span>(.y, suffix_to_remove)))</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fclass_freq <span class="ot">&lt;-</span> <span class="cf">function</span>(poi_list, suffix_to_remove) {</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">imap_dfr</span>(poi_list, <span class="sc">~</span> <span class="fu">subset_poi</span>(.x) <span class="sc">|&gt;</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>             <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>             <span class="fu">count</span>(fclass, <span class="at">name =</span> <span class="st">"n"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>             <span class="fu">mutate</span>(<span class="at">region =</span> <span class="fu">str_remove</span>(.y, suffix_to_remove)))</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Helper functions and constants -</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>public_provision_poi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"school"</span>, <span class="st">"supermarket"</span>, <span class="st">"hospital"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>subset_poi <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">keep =</span> public_provision_poi) {</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(x, fclass <span class="sc">%in%</span> keep)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>subset_and_stack <span class="ot">&lt;-</span> <span class="cf">function</span>(poi_list, suffix_to_remove) {</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">imap_dfr</span>(</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    poi_list,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">subset_poi</span>(.x) <span class="sc">|&gt;</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">region =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(.y, suffix_to_remove))</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>fclass_freq <span class="ot">&lt;-</span> <span class="cf">function</span>(poi_list, suffix_to_remove) {</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">imap_dfr</span>(</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    poi_list,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">subset_poi</span>(.x) <span class="sc">|&gt;</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>      sf<span class="sc">::</span><span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">count</span>(fclass, <span class="at">name =</span> <span class="st">"n"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">region =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(.y, suffix_to_remove))</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>In this step, we first collect all administrative area-specific OSM point objects whose names end with <code>\_regbez_poi</code> into a named list, using pattern matching and the <code>mget()</code> function to retrieve them from the environment. This list is then passed to helper functions that summarize the number of schools, supermarkets, and hospitals per administrative area and stack all regional datasets into a <strong>single nationwide point dataset</strong> while retaining region identifiers.</p>
 <div class="cell">
@@ -523,7 +521,7 @@ Geodetic CRS:  WGS 84
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>common_cols <span class="ot">&lt;-</span> <span class="fu">intersect</span>(<span class="fu">names</span>(poi_polys_all), <span class="fu">names</span>(poi_points_all))</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>germany_poi_all_combined <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>germany_poi_all_combined <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  poi_polys_all[, common_cols],</span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  poi_points_all[, common_cols]</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -563,14 +561,14 @@ Geodetic CRS:  WGS 84
 <p>The code then identifies which POI geometries are polygons and replaces those with their centroids (i.e., the most central pair of longitude and latitude) so that all features can be treated as points for spatial overlay with the German municipality polygons. Centroid reduction is chosen primarily for data simplification reasons: it allows all POI geometries to be represented in a uniform point format.</p>
 <p>We then perform a spatial join to attach municipality identifiers and attributes to each POI by checking <strong>whether each POI point lies within a municipality polygon (point-in-polygon overlay</strong>). Finally, we assess match quality by counting the number of POIs that could not be assigned to any municipality, which may occur due to boundary effects.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>germany_poi_all_combined <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(germany_poi_all_combined)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(germany_poi_all_combined) <span class="ot">&lt;-</span> <span class="fu">st_crs</span>(german_municipalities)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>geom_type  <span class="ot">&lt;-</span> <span class="fu">st_geometry_type</span>(germany_poi_all_combined)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>germany_poi_all_combined <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(germany_poi_all_combined)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(germany_poi_all_combined) <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_crs</span>(german_municipalities)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>geom_type  <span class="ot">&lt;-</span>sf<span class="sc">::</span><span class="fu">st_geometry_type</span>(germany_poi_all_combined)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>is_polygon <span class="ot">&lt;-</span> geom_type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"POLYGON"</span>, <span class="st">"MULTIPOLYGON"</span>)</span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>germany_poi_all_combined<span class="sc">$</span>geometry[is_polygon] <span class="ot">&lt;-</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_centroid</span>(germany_poi_all_combined<span class="sc">$</span>geometry[is_polygon])</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>)</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>poi_with_municipalities <span class="ot">&lt;-</span> <span class="fu">st_join</span>(</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_centroid</span>(germany_poi_all_combined<span class="sc">$</span>geometry[is_polygon])</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>poi_with_municipalities <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_join</span>(</span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  germany_poi_all_combined,</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  german_municipalities,</span>
 <span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">join =</span> st_within,</span>
@@ -586,13 +584,13 @@ Geodetic CRS:  WGS 84
 <p>We identified that <strong>205</strong> POI were not matched with a municipality. To track non-matches, we reverse-geocode the unmatched POI. This allows to further diagnose whether the unmatched POI lie outside Germany (e.g., OSM-related error) or are artifacts of the point-in-polygon/municipality matching procedure.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>poi_na     <span class="ot">&lt;-</span> poi_with_municipalities[<span class="fu">is.na</span>(poi_with_municipalities<span class="sc">$</span>mun_id), ]</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>coords     <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(poi_na)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>coords     <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_coordinates</span>(poi_na)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>poi_na<span class="sc">$</span>lon <span class="ot">&lt;-</span> coords[, <span class="st">"X"</span>]</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>poi_na<span class="sc">$</span>lat <span class="ot">&lt;-</span> coords[, <span class="st">"Y"</span>]</span>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>poi_na_rg  <span class="ot">&lt;-</span> poi_na <span class="sc">|&gt;</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">reverse_geocode</span>(<span class="at">lat =</span> lat, <span class="at">long =</span> lon, <span class="at">method =</span> <span class="st">"arcgis"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  tidygeocoder<span class="sc">::</span><span class="fu">reverse_geocode</span>(<span class="at">lat =</span> lat, <span class="at">long =</span> lon, <span class="at">method =</span> <span class="st">"arcgis"</span>,</span>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">address =</span> address, <span class="at">min_time =</span> <span class="dv">1</span>)</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>poi_na_rg<span class="sc">$</span>country_code <span class="ot">&lt;-</span> <span class="fu">str_extract</span>(<span class="fu">str_trim</span>(poi_na_rg<span class="sc">$</span>address), <span class="st">"[A-Z]{3}$"</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>poi_na_rg<span class="sc">$</span>country_code <span class="ot">&lt;-</span> stringr<span class="sc">::</span><span class="fu">str_extract</span>(<span class="fu">str_trim</span>(poi_na_rg<span class="sc">$</span>address), <span class="st">"[A-Z]{3}$"</span>)</span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(poi_na_rg<span class="sc">$</span>country_code)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
@@ -613,15 +611,15 @@ AUT BEL CHE CZE DNK FRA LUX NLD POL
 <p>Because OSM data are not created for academic research and do not qualify as scientific data, they are not subject to rigorous quality control before collection and do not follow strict data collection standards (e.g., formal codebooks or standardized classification rules). We therefore recommend screening the data for duplicate records. Duplicates can arise, for example, when the same school is mapped both as a point and as a polygon, or when it is mistakenly recorded multiple times in the same format. Conducting these basic sanity checks helps identify and limit coverage errors that result from human data entry.</p>
 <p>The deduplication procedure begins by re-projecting all POI from geographic coordinates (degrees) to a projected CRS measured in meters (i.e., EPSG:25832). This re-projection enables accurate distance calculations. Using the projected data, a nearest-neighbor search is conducted in which each point is compared to itself and its closest neighboring point. Neighboring points located within a maximum distance of one meter are flagged as potential duplicates. From these results, all candidate duplicate point pairs are constructed, excluding self-matches and retaining each pair only once. The second point in each identified duplicate pair is then classified as redundant and removed from the original dataset. This process yields a deduplicated POI dataset in which each remaining point represents a unique public service provision proxy.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>poi_m     <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(poi_with_municipalities_ger, <span class="dv">25832</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>nn        <span class="ot">&lt;-</span> <span class="fu">st_nn</span>(poi_m, poi_m, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">maxdist =</span> <span class="dv">1</span>, <span class="at">returnDist =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>dup_pairs <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>poi_m     <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_transform</span>(poi_with_municipalities_ger, <span class="dv">25832</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>nn        <span class="ot">&lt;-</span> nngeo<span class="sc">::</span><span class="fu">st_nn</span>(poi_m, poi_m, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">maxdist =</span> <span class="dv">1</span>, <span class="at">returnDist =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>dup_pairs <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">i =</span> <span class="fu">rep</span>(<span class="fu">seq_along</span>(nn<span class="sc">$</span>nn), <span class="fu">lengths</span>(nn<span class="sc">$</span>nn)),</span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">j =</span> <span class="fu">unlist</span>(nn<span class="sc">$</span>nn)</span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(i <span class="sc">!=</span> j) <span class="sc">|&gt;</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">a =</span> <span class="fu">pmin</span>(i, j), <span class="at">b =</span> <span class="fu">pmax</span>(i, j)) <span class="sc">|&gt;</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(a, b)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(i <span class="sc">!=</span> j) <span class="sc">|&gt;</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">a =</span> <span class="fu">pmin</span>(i, j), <span class="at">b =</span> <span class="fu">pmax</span>(i, j)) <span class="sc">|&gt;</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(a, b)</span>
 <span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>to_drop   <span class="ot">&lt;-</span> <span class="fu">unique</span>(dup_pairs<span class="sc">$</span>b)</span>
 <span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>poi_with_municipalities_ger_dedup <span class="ot">&lt;-</span> poi_with_municipalities_ger[<span class="sc">-</span>to_drop, ]</span>
 <span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
@@ -686,10 +684,10 @@ POI types after deduplicating
 <span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(nm, <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="fu">file.path</span>(<span class="st">"./data/"</span>, files2[[nm]]), <span class="at">quiet =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>poi_bund_stacked <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  hospitals_de    <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">poi_type =</span> <span class="st">"hospital"</span>),</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  schools_de      <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">poi_type =</span> <span class="st">"school"</span>),</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  supermarkets_de <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">poi_type =</span> <span class="st">"supermarket"</span>)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>poi_bund_stacked <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  hospitals_de    <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">poi_type =</span> <span class="st">"hospital"</span>),</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  schools_de      <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">poi_type =</span> <span class="st">"school"</span>),</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  supermarkets_de <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">poi_type =</span> <span class="st">"supermarket"</span>)</span>
 <span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(poi_bund_stacked<span class="sc">$</span>poi_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -727,18 +725,18 @@ POI types after deduplicating
 </div>
 <p>In this part of the tool, <strong>OSM-based POI measures are benchmarked against official built environment data from BKG</strong>, which are treated as a gold standard. By comparing counts and distributions of public service facilities across the two datasets and German municipalities, the tool enables researchers to quantify and visualize under- and overcoverage in OSM and to critically assess the suitability of OSM data for linking with survey responses. In particular, below, for each public provision service proxy, we count the number of POI in each data source. We visualize these counts using side-by-side bar charts, which allows to directly compare coverage across categories and identify where the two datasets converge or differ in their coverage of public service provision proxies.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>combined <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>combined <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  poi_bund_stacked <span class="sc">|&gt;</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="at">category =</span> poi_type) <span class="sc">|&gt;</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">dataset =</span> <span class="st">"poi_bund_stacked"</span>),</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">category =</span> poi_type) <span class="sc">|&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">dataset =</span> <span class="st">"poi_bund_stacked"</span>),</span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  poi_with_municipalities_ger_dedup <span class="sc">|&gt;</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="at">category =</span> fclass) <span class="sc">|&gt;</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">dataset =</span> <span class="st">"poi_with_municipalities"</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">category =</span> fclass) <span class="sc">|&gt;</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">dataset =</span> <span class="st">"poi_with_municipalities"</span>)</span>
 <span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined, <span class="fu">aes</span>(<span class="at">x =</span> category, <span class="at">fill =</span> dataset)) <span class="sc">+</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(combined, <span class="fu">aes</span>(<span class="at">x =</span> category, <span class="at">fill =</span> dataset)) <span class="sc">+</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_fill_manual</span>(</span>
 <span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
 <span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">"poi_bund_stacked"</span>        <span class="ot">=</span> <span class="st">"#014AAD"</span>,</span>
 <span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">"poi_with_municipalities"</span> <span class="ot">=</span> <span class="st">"#CBDDFE"</span></span>
@@ -748,13 +746,13 @@ POI types after deduplicating
 <span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>      <span class="st">"poi_with_municipalities"</span> <span class="ot">=</span> <span class="st">"German OpenStreetMap Data"</span></span>
 <span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_y_continuous</span>(</span>
 <span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">40000</span>),</span>
 <span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_comma</span>(<span class="at">big.mark =</span> <span class="st">"."</span>, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
 <span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Public Service Provision Proxies"</span>, <span class="at">y =</span> <span class="st">"POI Count"</span>, <span class="at">fill =</span> <span class="st">"Dataset"</span>) <span class="sc">+</span></span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Public Service Provision Proxies"</span>, <span class="at">y =</span> <span class="st">"POI Count"</span>, <span class="at">fill =</span> <span class="st">"Dataset"</span>) <span class="sc">+</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -784,31 +782,31 @@ POI types after deduplicating
 <p>Next, we compare the spatial distribution of public service provision across data sources by mapping POI counts at the municipality level. For each dataset, we aggregate points of interest by municipality and service type, then join these counts to municipal boundary geometries. We visualize the results using faceted choropleth maps, with each panel representing a different public service proxy and municipalities shaded by the POI counts. The figures are instrumental in assessing whether POI-Bund and OSM not only differ in overall counts, but also in how public service provision is spatially distributed across municipalities and whether the spatial distribution is relatively the same across the data sources.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>counts_osm <span class="ot">&lt;-</span> poi_with_municipalities_ger_dedup <span class="sc">|&gt;</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(mun_id, fclass, <span class="at">name =</span> <span class="st">"poi_count"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(mun_id, <span class="fu">desc</span>(poi_count))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(mun_id, fclass, <span class="at">name =</span> <span class="st">"poi_count"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(mun_id, <span class="fu">desc</span>(poi_count))</span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>counts_bund <span class="ot">&lt;-</span> poi_bund_stacked <span class="sc">|&gt;</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(mun_id, poi_type, <span class="at">name =</span> <span class="st">"poi_count"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(mun_id, <span class="fu">desc</span>(poi_count))</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(mun_id, poi_type, <span class="at">name =</span> <span class="st">"poi_count"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(mun_id, <span class="fu">desc</span>(poi_count))</span>
 <span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>poi_bund_with_mun_geom <span class="ot">&lt;-</span> counts_bund <span class="sc">|&gt;</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(german_municipalities <span class="sc">|&gt;</span> <span class="fu">select</span>(mun_id, geometry), <span class="at">by =</span> <span class="st">"mun_id"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>()</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(german_municipalities <span class="sc">|&gt;</span> <span class="fu">select</span>(mun_id, geometry), <span class="at">by =</span> <span class="st">"mun_id"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_as_sf</span>()</span>
 <span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>poi_osm_with_mun_geom <span class="ot">&lt;-</span> counts_osm <span class="sc">|&gt;</span></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(german_municipalities <span class="sc">|&gt;</span> <span class="fu">select</span>(mun_id, geometry), <span class="at">by =</span> <span class="st">"mun_id"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(german_municipalities <span class="sc">|&gt;</span> <span class="fu">select</span>(mun_id, geometry), <span class="at">by =</span> <span class="st">"mun_id"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_as_sf</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(poi_bund_with_mun_geom) <span class="sc">+</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> poi_count), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> poi_type) <span class="sc">+</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#deebf7"</span>, <span class="at">high =</span> <span class="st">"#08306b"</span>, <span class="at">trans =</span> <span class="st">"sqrt"</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(poi_bund_with_mun_geom) <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> poi_count), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> poi_type) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#deebf7"</span>, <span class="at">high =</span> <span class="st">"#08306b"</span>, <span class="at">trans =</span> <span class="st">"sqrt"</span>,</span>
 <span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1500</span>), <span class="at">na.value =</span> <span class="st">"grey95"</span>) <span class="sc">+</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Public Provision Counts by Type and Municipality, Germany"</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Public Provision Counts by Type and Municipality, Germany"</span>,</span>
 <span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Official POI Data: POI-Bund"</span>, <span class="at">fill =</span> <span class="st">"POI count"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
@@ -821,13 +819,13 @@ POI types after deduplicating
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(poi_osm_with_mun_geom) <span class="sc">+</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> poi_count), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> fclass) <span class="sc">+</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#deebf7"</span>, <span class="at">high =</span> <span class="st">"#08306b"</span>, <span class="at">trans =</span> <span class="st">"sqrt"</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(poi_osm_with_mun_geom) <span class="sc">+</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> poi_count), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> fclass) <span class="sc">+</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#deebf7"</span>, <span class="at">high =</span> <span class="st">"#08306b"</span>, <span class="at">trans =</span> <span class="st">"sqrt"</span>,</span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1500</span>), <span class="at">na.value =</span> <span class="st">"grey95"</span>) <span class="sc">+</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Public Provision Counts by Type and Municipality, Germany"</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Public Provision Counts by Type and Municipality, Germany"</span>,</span>
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"OSM POI Data"</span>, <span class="at">fill =</span> <span class="st">"POI count"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
@@ -840,13 +838,13 @@ POI types after deduplicating
 </div>
 </div>
 <p>Across both figures, the relative spatial distribution of public service provision look very similar in POI-Bund and OSM. For all three service types, higher POI counts are consistently concentrated in densely populated and urbanized areas, especially around major metropolitan regions. This suggests that both datasets point to the same municipalities as key hubs of public service provision, indicating strong agreement in the relative spatial distribution of services across Germany. Importantly, there are no major regions where one dataset shows extensive coverage while the other shows none, and rural areas are represented in much the same way in both datasets. Overall, the maps show a high degree of convergence between POI-Bund and OSM in how public service provision proxies are relatively distributed across space.</p>
-<div class="callout callout-style-default callout-important callout-titled" title="Major Take-Away (2)">
+<div class="callout callout-style-default callout-tip callout-titled" title="Major Take-Away (2)">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Major Take-Away (2)
+<span class="screen-reader-only">Tip</span>Major Take-Away (2)
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -957,22 +955,22 @@ POI types after deduplicating
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>dv_sd     <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">sd</span>(survey_context<span class="sc">$</span>service_depri,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>)</span>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>dv_miss   <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">is.na</span>(survey_context<span class="sc">$</span>service_depri)) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span>
 <span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dv_summary, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(service_depri), <span class="at">y =</span> prop)) <span class="sc">+</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#014AAD"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>, <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> scales<span class="sc">::</span><span class="fu">percent</span>(prop, <span class="at">accuracy =</span> <span class="fl">0.1</span>)),</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(dv_summary, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(service_depri), <span class="at">y =</span> prop)) <span class="sc">+</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#014AAD"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>, <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> scales<span class="sc">::</span><span class="fu">percent</span>(prop, <span class="at">accuracy =</span> <span class="fl">0.1</span>)),</span>
 <span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">"grey30"</span>) <span class="sc">+</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(),</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(),</span>
 <span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(dv_summary<span class="sc">$</span>prop) <span class="sc">*</span> <span class="fl">1.18</span>),</span>
 <span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span></span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
 <span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Perceived Infrastructural Deprivation"</span>,</span>
 <span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Share of respondents"</span>,</span>
 <span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="fu">paste0</span>(<span class="st">"Mean = "</span>, dv_mean, <span class="st">"  \u2022  SD = "</span>, dv_sd,</span>
 <span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"  \u2022  Missing: "</span>, dv_miss, <span class="st">"%  \u2022  "</span>,</span>
 <span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"0 = low deprivation, 4 = high deprivation"</span>)</span>
 <span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"grey50"</span>, <span class="at">size =</span> <span class="dv">9</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"grey50"</span>, <span class="at">size =</span> <span class="dv">9</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1276,7 +1274,7 @@ POI types after deduplicating
 <span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">"service_depri ~ "</span>, v,</span>
 <span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">" + age + female + edu_low + edu_high + (1 | mun_id)"</span></span>
 <span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>    m <span class="ot">&lt;-</span> <span class="fu">lmer</span>(formula, <span class="at">data =</span> survey_context, <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>    m <span class="ot">&lt;-</span> lme4<span class="sc">::</span><span class="fu">lmer</span>(formula, <span class="at">data =</span> survey_context, <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>    broom.mixed<span class="sc">::</span><span class="fu">tidy</span>(m, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
 <span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">==</span> v) <span class="sc">|&gt;</span></span>
 <span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">poi_type =</span> label, <span class="at">source =</span> source)</span>
@@ -1285,26 +1283,26 @@ POI types after deduplicating
 </div>
 <p>The coefficient plot below displays the estimated effects of public service provision on perceived infrastructural deprivation, separately for each POI type and data source. The key comparison is between OSM-based estimates (light blue) and official POI-Bund estimates (dark blue). If the confidence intervals overlap substantially, this suggests that the choice of POI data source does not meaningfully alter substantive conclusions.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(results, <span class="fu">aes</span>(<span class="at">x =</span> poi_type, <span class="at">y =</span> estimate, <span class="at">color =</span> source)) <span class="sc">+</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(results, <span class="fu">aes</span>(<span class="at">x =</span> poi_type, <span class="at">y =</span> estimate, <span class="at">color =</span> source)) <span class="sc">+</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_pointrange</span>(</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high),</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.4</span>),</span>
 <span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">0.8</span></span>
 <span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
 <span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
 <span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="at">osm =</span> <span class="st">"#CBDDFE"</span>, <span class="at">official =</span> <span class="st">"#014AAD"</span>),</span>
 <span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">osm =</span> <span class="st">"OSM"</span>, <span class="at">official =</span> <span class="st">"Official (POI-Bund)"</span>)</span>
 <span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
 <span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Effect of Public Service Provision on Perceived Infrastructural Deprivation"</span>,</span>
 <span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Multilevel models with random intercepts by municipality"</span>,</span>
 <span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
 <span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Coefficient estimate (95% CI)"</span>,</span>
 <span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Data source"</span></span>
 <span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1316,82 +1314,129 @@ POI types after deduplicating
 </section>
 <section id="interpretation" class="level2">
 <h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Major Implications">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Major Implications
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>1. Expected Relationship</strong></p>
-<p>Across all three proxies of public service provision, the estimated effects are negative. Municipalities with more <strong>hospitals, schools, or supermarkets</strong> are associated with <strong>lower perceived infrastructural deprivation</strong>, controlling for individual demographic characteristics.</p>
-<p><strong>2. Robustness across Data Sources</strong></p>
-<p>Estimates derived from <strong>OSM</strong> and <strong>official POI-Bund data</strong> are <strong>very similar</strong> in magnitude, direction, and statistical significance. The substantial overlap of confidence intervals indicates that the <strong>choice of POI data source does not meaningfully affect the substantive conclusions</strong>.</p>
-</div>
-</div>
+<section id="expected-relationship" class="level3">
+<h3 class="anchored" data-anchor-id="expected-relationship">Expected Relationship</h3>
+<p>Across all three proxies of public service provision, the estimated effects are negative. Municipalities with more <strong>hospitals, schools, or supermarkets are associated with lower perceived infrastructural deprivation</strong>, controlling for individual demographic characteristics.</p>
+</section>
+<section id="robustness-across-data-sources" class="level3">
+<h3 class="anchored" data-anchor-id="robustness-across-data-sources">Robustness across Data Sources</h3>
+<p>Estimates derived from OSM and official POI-Bund data are very similar in magnitude, direction, and statistical significance. The substantial overlap of confidence intervals indicates that the <strong>choice of POI data source does not meaningfully affect the substantive conclusions</strong>.</p>
+</section>
 </section>
 </section>
 <section id="conclusion-recommendations-future-work" class="level1">
 <h1>Conclusion, Recommendations and Future Work</h1>
 <p>The goal of this tool was to address a critical gap by providing a <strong>hands-on primer for assessing OSM data quality in survey-based analyses</strong>. Specifically, the tool evaluated the <strong>coverage of OSM POI data</strong> when used as a proxy for <strong>local public service provision</strong> in linked survey data and examined whether differences in coverage translate into different substantive conclusions.</p>
-<p>Three main findings are summarized here:</p>
-<p><strong>First</strong>, OSM-based POI data and official built environment data provide <strong>largely comparable coverage</strong> of public service provision proxies at both the <strong>national and municipal levels</strong>.</p>
-<p><strong>Second</strong>, the small differences in coverage primarily reflect <strong>differences in data production and tagging practices</strong>. OSM contributors and official data providers apply distinct rules when recording, classifying, and tagging built environment features, including how facilities such as schools, hospitals, or supermarkets are defined conceptually and geographically. Despite this conceptual non-equivalence, our results suggest that the datasets can be treated as interchangeable for this application.</p>
-<p><strong>Third</strong>, regression estimates derived from <strong>OSM-based and POI-Bund proxies</strong> yield <strong>highly similar results across all public service provision indicators</strong>.</p>
-<p>Overall, these findings strengthen confidence that substantive conclusions regarding the relationship between perceived infrastructural deprivation and objective measures of public service provision are largely insensitive to the choice of POI data source. Any analytical error arising from differences in coverage or conceptual definitions across datasets appears to be minimal. Accordingly, our study demonstrates that OSM and official POI data sources can be considered highly interchangeable in survey data linkage-based research, particularly when they are used to operationalize <strong>aggregated measures of built environment availability</strong>.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Three Main Findings">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Three Main Findings
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>1. Comparable coverage across sources</strong> OSM-based POI data and official built environment data provide largely comparable coverage of public service provision proxies at both the national and municipal levels.</p>
+<p><strong>2. Differences reflect data production practices, not substantive gaps</strong> The small differences in coverage primarily reflect differences in tagging and classification conventions. Despite this conceptual non-equivalence, the datasets can be treated as interchangeable for this application.</p>
+<p><strong>3. Robust regression results across data sources</strong> Regression estimates derived from OSM-based and POI-Bund proxies yield highly similar results across all public service provision indicators.</p>
+</div>
+</div>
+<p>Overall, these findings strengthen confidence that substantive conclusions regarding the relationship between perceived infrastructural deprivation and objective measures of public service provision are largely insensitive to the choice of POI data source. Accordingly, OSM and official POI data sources can be considered highly interchangeable in survey data linkage-based research, particularly when operationalizing <strong>aggregated measures of built environment availability</strong>.</p>
 <section id="key-recommendations" class="level2">
 <h2 class="anchored" data-anchor-id="key-recommendations">Key Recommendations</h2>
-<p>We outline several key methodological recommendations for researchers interested in augmenting survey data with OSM and addressing similar research questions.</p>
-<ul>
-<li><strong>Carefully examine non-matches when linking OSM data to geographic units (e.g., municipalities, ZIP codes, grid cells).</strong></li>
-</ul>
-<p>Researchers should explicitly diagnose the sources of non-matches, distinguishing between technical linkage issues (i.e., incompatible geographic boundaries or projection mismatches) and data-related issues in OSM itself (i.e., volunteer tagging errors, administrative misclassification, or cross-border effects).</p>
-<ul>
-<li><strong>Deduplicate OSM data prior to analysis.</strong></li>
-</ul>
-<p>To minimize redundancy, researchers should systematically cross-check point and polygon layers and remove duplicate features. Spatial neighbor detection algorithms can be used to identify likely duplicates, applying very small distance thresholds (e.g., within 1 meter) to flag potetially duplicated POI.</p>
-<ul>
-<li><strong>Become familiar with how POI are defined and classified in OSM.</strong></li>
-</ul>
-<p>When benchmarking OSM against official POI data, or when using OSM as a standalone source, researchers should carefully review OSM tagging schemes and community conventions. This is essential for evaluating what OSM-based POIs can capture and where their conceptual limits lie.</p>
-<ul>
-<li><strong>Where feasible, benchmark OSM against official POI data.</strong></li>
-</ul>
-<p>Researchers should conduct low-effort, aggregated comparisons with administrative or official built environment datasets to verify that OSM provides sufficient coverage. When official data are unavailable, alternative benchmarks, such as address lists of chain supermarkets or other reliable facility registries, can serve as useful reference points.</p>
-<ul>
-<li><strong>Conduct robustness checks with respect to missing data imputation.</strong></li>
-</ul>
-<p>Sensitivity analyses should be used to assess whether substantive results are robust to different assumptions about missing data and imputation strategies, ensuring that conclusions are not driven by data preprocessing decisions and are relatively free from processing errors.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Examine non-matches carefully">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Examine non-matches carefully
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Explicitly diagnose the sources of non-matches, distinguishing between technical linkage issues (incompatible boundaries or projection mismatches) and data-related issues in OSM itself (tagging errors, administrative misclassification, or cross-border effects).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Deduplicate OSM data prior to analysis">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Deduplicate OSM data prior to analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Systematically cross-check point and polygon layers and remove duplicate features. Spatial neighbor detection algorithms can be used to identify likely duplicates, applying very small distance thresholds (e.g., within 1 meter).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Understand OSM tagging conventions">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Understand OSM tagging conventions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Carefully review OSM tagging schemes and community conventions before benchmarking against official data or using OSM as a standalone source. This is essential for evaluating what OSM-based POIs can and cannot capture.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Benchmark against official data where feasible">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Benchmark against official data where feasible
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Conduct low-effort, aggregated comparisons with administrative or official built environment datasets. When official data are unavailable, address lists of chain facilities or other reliable registries can serve as reference points.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Run robustness checks on missing data imputation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Run robustness checks on missing data imputation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Use sensitivity analyses to assess whether results are robust to different imputation assumptions, ensuring conclusions are not driven by data preprocessing decisions.</p>
+</div>
+</div>
 </section>
 <section id="future-work" class="level2">
 <h2 class="anchored" data-anchor-id="future-work">Future Work</h2>
-<ul>
-<li><strong>Expand the range of POI categories.</strong></li>
-</ul>
+<section id="expand-the-range-of-poi-categories" class="level3">
+<h3 class="anchored" data-anchor-id="expand-the-range-of-poi-categories">Expand the range of POI categories</h3>
 <p>Future research should incorporate additional built environment features, such as post offices, public transport stops, pharmacies, banks and ATMs, to assess whether patterns of coverage as observed for hospitals, schools, and supermarkets generalize to other types of public and commercial infrastructure.</p>
-<ul>
-<li><strong>Extend to alternative operationalization schemes: Proximity measures</strong></li>
-</ul>
+</section>
+<section id="extend-to-alternative-operationalization-schemes-proximity-measures" class="level3">
+<h3 class="anchored" data-anchor-id="extend-to-alternative-operationalization-schemes-proximity-measures">Extend to alternative operationalization schemes: Proximity measures</h3>
 <p>It is useful to explore individual-level accesibility as captured by distance- or proximity-based indicators as well. It would be interesting to compare the quality and robustness of proximity measures, such as distance to the nearest hospital, school, or supermarket, derived from OSM versus official POI data, as these measures may be differently affected by both coverage and positional accuracy errors (i.e., spatial mismatches between recorded POI coordinates and their true real-world locations, for example when a hospital is mapped 200m away from its actual location) when proxying individual-level access to services.</p>
-<ul>
-<li><strong>Assess external validity.</strong></li>
-</ul>
+</section>
+<section id="assess-external-validity" class="level3">
+<h3 class="anchored" data-anchor-id="assess-external-validity">Assess external validity</h3>
 <p>Extending the analysis beyond Germany to countries with varying levels of OSM maturity would allow for an evaluation of how cross-national variations in OSM data quality may shape OSM reliability for survey data linkage-based studies in other contexts.</p>
-<ul>
-<li><strong>Account for temporal alignment of official and OSM data sources.</strong></li>
-</ul>
+</section>
+<section id="account-for-temporal-alignment-of-official-and-osm-data-sources" class="level3">
+<h3 class="anchored" data-anchor-id="account-for-temporal-alignment-of-official-and-osm-data-sources">Account for temporal alignment of official and OSM data sources</h3>
 <p>Future studies should prioritize time-compatible comparisons between official POI datasets and OSM extracts, ideally matching reference years to model temporal discrepancies and their impact on coverage.</p>
-<ul>
-<li><strong>Account for OSM POI coverage dynamics.</strong></li>
-</ul>
+</section>
+<section id="account-for-osm-poi-coverage-dynamics" class="level3">
+<h3 class="anchored" data-anchor-id="account-for-osm-poi-coverage-dynamics">Account for OSM POI coverage dynamics</h3>
 <p>It would be useful to disentangle true coverage gaps from changes driven by POI turnover, particularly for more volatile features, such as supermarkets, in order to insight into the temporal stability of OSM subsets.</p>
-<ul>
-<li><strong>Investigate the differences between OSM and official POI data.</strong></li>
-</ul>
+</section>
+<section id="investigate-the-differences-between-osm-and-official-poi-data" class="level3">
+<h3 class="anchored" data-anchor-id="investigate-the-differences-between-osm-and-official-poi-data">Investigate the differences between OSM and official POI data</h3>
 <p>While the differences between OSM and official POI data may appear negligible at first glance, it is worthwhile to identify the reasons why they differ and, most importantly, where they differ. Future work should focus on the relationship between the differences between OSM and official POI data and municipality-level indicators, such as sociodemographic and socioeconomic indicators that may explain why certain areas are more prone to differences than others.</p>
+</section>
 </section>
 </section>
 <section id="references" class="level1">
