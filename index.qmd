@@ -114,16 +114,7 @@ From Part 4 onwards, the tool uses a fully synthetic dataset that can be execute
 
 The overall workflow can be summarized as shown below.
 
-```{mermaid}
-flowchart TB
-    A1[Obtain GLES Data] --> E
-    A2[Obtain OSM Data from Geofabrik] --> B2[Assign & Deduplicate by Municipality] --> D2[Compare POI Coverage]
-    A3[Obtain Official POI Data] --> B3[Assign to Municipality] --> D2
-    D2 --> E[Link OSM and Official POI Data by Municipality]
-    E --> F[Create Public Service Provision Proxies]
-    F --> G[Run Regression Analyses]
-    G --> H[Compare Results for OSM and Official POI Proxies]
-```
+![](img/workflow.png){fig-align="center" width="80%"}
 
 # Set-up
 
