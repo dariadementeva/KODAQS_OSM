@@ -648,7 +648,7 @@ More formally, coverage error in OSM consists of two components:
 - **Errors of omission** occur when real-world features are missing from OSM. These errors correspond to **undercoverage**, for example, when an existing school or clinic is not included in the database 
 
 - **Errors of commission** arise when OSM contains excessive and duplicated features. These errors are consistent with **overcoverage**, such as when a single facility is recorded multiple times or when a feature is mapped although it does not exist in reality.
-::: 
+:::
 
 In this part of the tool, **OSM-based POI measures are benchmarked against official built environment data from BKG**, which are treated as a gold standard. By comparing counts and distributions of public service facilities across the two datasets and German municipalities, the tool enables researchers to quantify and visualize under- and overcoverage in OSM and to critically assess the suitability of OSM data for linking with survey responses. In particular, below, for each public provision service proxy, we count the number of POI in each data source. We visualize these counts using side-by-side bar charts, which allows to directly compare coverage across categories and identify where the two datasets converge or differ in their coverage of public service provision proxies.
 
@@ -840,7 +840,7 @@ Having prepared and compared POI data from OSM and official sources in the first
 
 To measure subjective perceptions of infrastructural deprivation, we rely on simulated survey data that mirrors the structure and distributional properties of the **German Longitudinal Election Study (GLES)** [@gles2023]. The [**GLES Cross-Section, Pre- and Post-Election 2021**](https://search.gesis.org/research_data/ZA7702){target="_blank"} is a cross-sectional, probability-based, georeferenced survey focusing on the political attitudes, opinions, and behaviors of German voters and non-voters, defined as German citizens aged 16 and older who are registered in the Federal Republic of Germany with their primary residence. The original dataset comprises 8550 respondents that were sampled in 162 municipalities. All responses were georeferenced to the municipality of each respondent's registered residence.
 
-::: {.callout-tip title ="Dependent Variable"}
+::: {.callout-tip title="Dependent Variable"}
 
 ## Perceived Infrastructural Deprivation
 
@@ -862,6 +862,7 @@ The scale was **reversed and rescaled** to range from:
 - **4 - High deprivation**
 
 Higher values indicate **stronger perceived infrastructural deprivation**.
+
 :::
 
 ## Data Linkage
