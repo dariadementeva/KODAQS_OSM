@@ -1214,12 +1214,6 @@ It would be useful to disentangle true coverage gaps from changes driven by POI 
 
 While the differences between OSM and official POI data may appear negligible at first glance, it is worthwhile to identify the reasons why they differ and, most importantly, where they differ. Future work should focus on the relationship between the differences between OSM and official POI data and municipality-level indicators, such as sociodemographic and socioeconomic indicators that may explain why certain areas are more prone to differences than others.
 
-# References
-
-::: {#refs}
-:::
-
-
 &nbsp;
 
 This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
